@@ -15,12 +15,26 @@ public class ResourceService {
     @Autowired
     private ResourceRepository repository;
 
-    public ResourceModel getResourcesByName() throws IOException {
-        List<ResourceModel> modelList = repository.findByUser("Dan");
-        return findUser(modelList);
+    public ResourceModel getResourcesByName(String userName) throws IOException {
+        List<ResourceModel> modelList = repository.findByUser(userName);
+        return findUser(modelList, userName);
     }
 
-    private ResourceModel findUser(List<ResourceModel> modelList) {
+    public void deleteResourcesByName(String userName) {
+        // List<ResourceModel> modelList = repository.findByUser(userName);
+
+        //  findUser(modelList, userName);
+        //   Long deletedItems =
+        repository.deleteByUser(userName);
+//        if (deletedItems != 1){
+//            return null;
+//        }
+
+        //   return true;
+    }
+
+    private ResourceModel findUser(List<ResourceModel> modelList, String userName) {
+
         if (modelList.isEmpty()) {
             System.out.println("Wrong name");
             return null;
@@ -28,17 +42,16 @@ public class ResourceService {
 
         List<ResourceModel> resource = new ArrayList<>();
         for (ResourceModel resourceModel : modelList) {
-            if (resourceModel.getUser().equals("Dan")) {
+            if (resourceModel.getUser().equals(userName)) {
                 resource.add(resourceModel);
             }
         }
 
         if (resource.isEmpty()) {
-            System.out.println("There is no user Dan");
+            System.out.println("There is no user" + userName);
             return null;
         }
 
         return resource.get(0);
     }
-
 }

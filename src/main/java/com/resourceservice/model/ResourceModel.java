@@ -10,8 +10,6 @@ import javax.persistence.Table;
 @Entity
 public class ResourceModel {
 
-    public static final String TABLE_NAME = "TBL_RESOURCES";
-
     @Id
     @GeneratedValue
     Integer id;

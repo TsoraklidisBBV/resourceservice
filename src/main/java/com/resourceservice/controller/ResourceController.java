@@ -26,12 +26,11 @@ public class ResourceController {
 
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/request/{resourceName}",
+            value = "/request/{userName}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-
-    public ResponseEntity getResourceRest(@PathVariable(value = "resourceName") String resourceName) throws IOException {
-        ResourceModel resource = resourceService.getResourcesByName();
+    public ResponseEntity getResourceByUserNameRest(@PathVariable(value = "userName") String resourceName) throws IOException {
+        ResourceModel resource = resourceService.getResourcesByName(resourceName);
 
         if (resource == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -41,5 +40,24 @@ public class ResourceController {
                 .header("Content-Disposition", "attachment; filename=" + resourceName)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(resource);
+    }
+
+    @RequestMapping(
+            method = RequestMethod.DELETE,
+            value = "/remove/{userName}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public void deleteResourceByUserNameRest(@PathVariable(value = "userName") String resourceName) throws IOException {
+//        ResourceModel resource = resourceService.getResourcesByName(resourceName);
+//
+//        if (resource == null) {
+//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//        }
+
+        resourceService.deleteResourcesByName(resourceName);
+
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body("Item deleted");
     }
 }
