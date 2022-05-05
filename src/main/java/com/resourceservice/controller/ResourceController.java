@@ -1,6 +1,6 @@
 package com.resourceservice.controller;
 
-import com.resourceservice.model.ResourceModel;
+import com.resourceservice.model.ResourceEntity;
 import com.resourceservice.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,28 +26,28 @@ public class ResourceController {
 
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/request/{userName}",
+            value = "/request/{resourceUuid}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity getResourceByUserNameRest(@PathVariable(value = "userName") String resourceName) throws IOException {
-        ResourceModel resource = resourceService.getResourcesByName(resourceName);
+    public ResponseEntity getResourceByResourceUuidRest(@PathVariable(value = "resourceUuid") String resourceUuid) throws IOException {
+        ResourceEntity resource = resourceService.getResourcesByName(resourceUuid);
 
         if (resource == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=" + resourceName)
+                .header("Content-Disposition", "attachment; filename=" + resourceUuid)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(resource);
     }
 
     @RequestMapping(
             method = RequestMethod.DELETE,
-            value = "/remove/{userName}",
+            value = "/remove/{resourceUuid}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public void deleteResourceByUserNameRest(@PathVariable(value = "userName") String resourceName) throws IOException {
+    public void deleteResourceByResourceUuidRest(@PathVariable(value = "resourceUuid") String resourceName) throws IOException {
 //        ResourceModel resource = resourceService.getResourcesByName(resourceName);
 //
 //        if (resource == null) {

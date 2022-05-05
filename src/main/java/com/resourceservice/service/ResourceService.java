@@ -1,6 +1,6 @@
 package com.resourceservice.service;
 
-import com.resourceservice.model.ResourceModel;
+import com.resourceservice.model.ResourceEntity;
 import com.resourceservice.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,17 +15,17 @@ public class ResourceService {
     @Autowired
     private ResourceRepository repository;
 
-    public ResourceModel getResourcesByName(String userName) throws IOException {
-        List<ResourceModel> modelList = repository.findByUser(userName);
-        return findUser(modelList, userName);
+    public ResourceEntity getResourcesByName(String resourceUuid) throws IOException {
+        List<ResourceEntity> modelList = repository.findByUuid(resourceUuid);
+        return findResourceByUuid(modelList, resourceUuid);
     }
 
-    public void deleteResourcesByName(String userName) {
-        // List<ResourceModel> modelList = repository.findByUser(userName);
+    public void deleteResourcesByName(String resourceUuid) {
+        // List<ResourceModel> modelList = repository.findByUser(resourceUuid);
 
-        //  findUser(modelList, userName);
+        //  findUser(modelList, resourceUuid);
         //   Long deletedItems =
-        repository.deleteByUser(userName);
+        repository.deleteByUuid(resourceUuid);
 //        if (deletedItems != 1){
 //            return null;
 //        }
@@ -33,25 +33,12 @@ public class ResourceService {
         //   return true;
     }
 
-    private ResourceModel findUser(List<ResourceModel> modelList, String userName) {
-
+    private ResourceEntity findResourceByUuid(List<ResourceEntity> modelList, String resourceUuid) {
         if (modelList.isEmpty()) {
             System.out.println("Wrong name");
             return null;
         }
 
-        List<ResourceModel> resource = new ArrayList<>();
-        for (ResourceModel resourceModel : modelList) {
-            if (resourceModel.getUser().equals(userName)) {
-                resource.add(resourceModel);
-            }
-        }
-
-        if (resource.isEmpty()) {
-            System.out.println("There is no user" + userName);
-            return null;
-        }
-
-        return resource.get(0);
+        return modelList.get(0);
     }
 }
