@@ -1,28 +1,42 @@
 package com.resourceservice.model;
 
-import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Table(name = "TBL_RESOURCES")
+@Entity
 public class ResourceModel {
 
-    public ResourceModel(Integer ID, String user, String model) {
-        super();
-        this.ID = ID;
-        this.user = user;
-        this.model = model;
-    }
+    public static final String TABLE_NAME = "TBL_RESOURCES";
 
-    Integer ID;
+    @Id
+    @GeneratedValue
+    Integer id;
 
     String user;
 
     String model;
 
-    public Integer getID() {
-        return ID;
+    public ResourceModel(Integer ID, String user, String model) {
+        super();
+        this.id = ID;
+        this.user = user;
+        this.model = model;
     }
 
-    public void setID(Integer ID) {
-        this.ID = ID;
+    public ResourceModel() {
+
+    }
+
+    public Integer getID() {
+        return id;
+    }
+
+    public void setID(Integer id) {
+        this.id = id;
     }
 
     public String getUser() {
