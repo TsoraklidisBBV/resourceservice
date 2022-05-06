@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -24,13 +24,21 @@ public class ResourceController {
         this.resourceService = mockApplicationImpl;
     }
 
-    @RequestMapping(
-            method = RequestMethod.GET,
+//    @PostMapping(path = "/createresourse",
+//            consumes = MediaType.APPLICATION_JSON_VALUE,
+//            produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<ResourceEntity> createResourceObject(@RequestBody CreateResourceDTO createResourceDTO) {
+//        ResourceEntity resourceEntity = resourceService.createResource(createResourceDTO);
+//        var location = URI.create(String.format("/createresourse/%s", resourceEntity.getUuid()));
+//        return ResponseEntity.created(location).body(resourceEntity);
+//    }
+
+    @GetMapping(
             value = "/request/{resourceUuid}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity getResourceByResourceUuidRest(@PathVariable(value = "resourceUuid") String resourceUuid) throws IOException {
-        ResourceEntity resource = resourceService.getResourcesByName(resourceUuid);
+    public ResponseEntity getResourceByResourceUuid(@PathVariable(value = "resourceUuid") String resourceUuid) throws IOException {
+        ResourceEntity resource = resourceService.getResourcesByUuid(resourceUuid);
 
         if (resource == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -42,22 +50,15 @@ public class ResourceController {
                 .body(resource);
     }
 
-    @RequestMapping(
-            method = RequestMethod.DELETE,
-            value = "/remove/{resourceUuid}",
+    @DeleteMapping(
+            value = "/removeresource/{resourceUuid}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public void deleteResourceByResourceUuidRest(@PathVariable(value = "resourceUuid") String resourceName) throws IOException {
-//        ResourceModel resource = resourceService.getResourcesByName(resourceName);
-//
-//        if (resource == null) {
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        }
+    public ResponseEntity deleteResourceByResourceUuid(@PathVariable(value = "resourceUuid") String resourceUuid) {
+        resourceService.deleteResourcesByUuid(resourceUuid);
 
-        resourceService.deleteResourcesByName(resourceName);
-
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body("Item deleted");
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("Item deleted");
     }
 }
