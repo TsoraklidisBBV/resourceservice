@@ -14,16 +14,18 @@ public class ResourceEntity {
     @GeneratedValue
     Integer id;
 
-    String OwnerOfHardware;
+    String owner;
 
     String uuid;
 
+    //uuid of the hardware as well ?
+
     String description;
 
-    public ResourceEntity(Integer ID, String OwnerOfHardware, String description) {
+    public ResourceEntity(Integer ID, String owner, String description) {
         super();
         this.id = ID;
-        this.OwnerOfHardware = OwnerOfHardware;
+        this.owner = owner;
         this.description = description;
     }
 
@@ -47,12 +49,12 @@ public class ResourceEntity {
         this.uuid = uuid;
     }
 
-    public String getOwnerOfHardware() {
-        return OwnerOfHardware;
+    public String getOwner() {
+        return owner;
     }
 
-    public void setOwnerOfHardware(String user) {
-        this.OwnerOfHardware = user;
+    public void setOwner(String user) {
+        this.owner = user;
     }
 
     public String getDescription() {

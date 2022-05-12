@@ -3,7 +3,6 @@ package com.resourceservice.controller;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.UpdateResourceClassDTO;
 import com.resourceservice.service.CreateResourceClassDTO;
-import com.resourceservice.model.ResourceClassEntity;
 import com.resourceservice.service.ResourceClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,7 +37,7 @@ public class ResourceClassController {
 
     @GetMapping(path = "/retreiveallresourceclass",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ResourceClassDTO>> getResourceObject() {
+    public ResponseEntity<List<ResourceClassDTO>> getAllResourceObjects() {
         List<ResourceClassDTO> resourceClassDTO = resourceClassService.getAllResourceClass();
         return ResponseEntity.ok().body(resourceClassDTO);
     }
@@ -54,20 +53,20 @@ public class ResourceClassController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(resourceClassDTO);
     }
 
-    @PutMapping(path = "resourceclass/{uuid}",
+    @PutMapping(path = "/resourceclass/{uuid}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResourceClassDTO> updateResourceObject(
             @PathVariable(value = "uuid") String uuid,
             @RequestBody UpdateResourceClassDTO updateResourceClassDTO) {
         ResourceClassDTO resourceClassDTO = resourceClassService.updateResourceClass(updateResourceClassDTO, uuid);
-        return ResponseEntity.ok().body(resourceClassDTO);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(resourceClassDTO);
     }
 
     @DeleteMapping(path = "/resourceclass/{uuid}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteByUuidResourceObject(@PathVariable(value = "uuid") String uuid) {
         resourceClassService.deleteByUuidResourceClass(uuid);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("Resource with uuid:" + uuid + "was Deleted");
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("Resource with uuid: " + uuid + " was Deleted");
     }
 }

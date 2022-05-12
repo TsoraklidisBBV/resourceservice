@@ -11,7 +11,7 @@ public interface ResourceClassRepository extends JpaRepository<ResourceClassEnti
 
     ResourceClassEntity save(ResourceClassEntity entity);
 
-    List<ResourceClassEntity> getByUuid(String Uuid);
+    List<ResourceClassEntity> findByUuid(String Uuid);
 
     Long deleteByUuid(String Uuid);
 }

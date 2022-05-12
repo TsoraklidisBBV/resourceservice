@@ -29,7 +29,7 @@ public class ResourceClassService {
     }
 
     public ResourceClassDTO updateResourceClass(UpdateResourceClassDTO updateResourceClassDTO, String uuid) {
-        ResourceClassEntity resourceClassEntity = resourceClassRepository.getByUuid(uuid).get(0);
+        ResourceClassEntity resourceClassEntity = resourceClassRepository.findByUuid(uuid).get(0);
         resourceClassEntity.setName(updateResourceClassDTO.getName());
         ResourceClassEntity savedResourceClassEntity = resourceClassRepository.save(resourceClassEntity);
 
@@ -45,7 +45,7 @@ public class ResourceClassService {
     }
 
     public ResourceClassDTO getByUuidResourceClass(String uuid) {
-        List<ResourceClassEntity> resourceClassEntityList = resourceClassRepository.getByUuid(uuid);
+        List<ResourceClassEntity> resourceClassEntityList = resourceClassRepository.findByUuid(uuid);
         return mapResourceClassEntityToDTO(resourceClassEntityList).get(0);
     }
 

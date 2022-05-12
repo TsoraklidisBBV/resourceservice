@@ -1,6 +1,6 @@
 CREATE TABLE TBL_RESOURCES (
     id INT AUTO_INCREMENT PRIMARY KEY,
     uuid VARCHAR(36) NOT NULL,
-    owner_of_hardware VARCHAR(250) NOT NULL,
+    owner VARCHAR(250) NOT NULL,
     description VARCHAR(250) NOT NULL
 );

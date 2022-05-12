@@ -33,6 +33,8 @@ public class ResourceController {
 //        return ResponseEntity.created(location).body(resourceEntity);
 //    }
 
+// @PutMapping
+
     @GetMapping(
             value = "/request/{resourceUuid}",
             produces = MediaType.APPLICATION_JSON_VALUE
