@@ -71,4 +71,9 @@ public class ResourceClassService {
     public long deleteByUuidResourceClass(String uuid) {
         return resourceClassRepository.deleteByUuid(uuid);
     }
+
+    public ResourceClassService(ResourceClassRepository resourceClassRepository) {
+        this.resourceClassRepository = resourceClassRepository;
+    }
+
 }

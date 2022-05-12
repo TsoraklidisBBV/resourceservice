@@ -1,7 +1,9 @@
 package com.resourceservice.service;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.ResourceClassEntity;
+import com.resourceservice.model.UpdateResourceClassDTO;
 import com.resourceservice.repository.ResourceClassRepository;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.AfterEach;
@@ -21,61 +23,123 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ResourceClassServiceTest {
 
-    ResourceClassService resourceClassService;
+  ResourceClassService resourceClassService;
+  ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
 
-    @Mock
-    private ResourceClassRepository resourceClassRepository;
+  final String uuid = "65028399-b23c-4c08-a509-cb531c15286b";
 
-    @BeforeEach
-    void init() {
-        resourceClassService = new ResourceClassService();
+  @Mock
+  private ResourceClassRepository resourceClassRepository;
 
-        ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
-        resourceClassEntity.setUuid("1");
-        resourceClassEntity.setName("Red");
-        resourceClassEntity.setId(1);
+  @BeforeEach
+  void init() {
+    resourceClassService = new ResourceClassService(resourceClassRepository);
 
-        List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
-        listOfResourceClassEntities.add(0, resourceClassEntity);
+    resourceClassEntity.setUuid(uuid);
+    resourceClassEntity.setName("Dell");
+    resourceClassEntity.setId(1);
+  }
 
-        resourceClassRepository.saveAll(listOfResourceClassEntities);
-    }
 
-    @Test
-    void createResourceClass() {
-    }
+  @Test
+  void createResourceClass_Success() {
+    ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
+    resourceClassDTO.setName(resourceClassEntity.getName());
+    resourceClassDTO.setUuid(resourceClassEntity.getUuid());
 
-    @Test
-    void updateResourceClass() {
-    }
+    when(resourceClassRepository.save(any())).thenReturn(resourceClassEntity);
 
-    @Test
-    void getAllResourceClass() {
-        ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
-        resourceClassEntity.setUuid("1");
-        resourceClassEntity.setName("Red");
-        resourceClassEntity.setId(1);
+    ResourceClassDTO result = resourceClassService.createResourceClass(new CreateResourceClassDTO());
+    Assertions.assertEquals(resourceClassDTO.getName(), result.getName());
+    Assertions.assertEquals(resourceClassDTO.getUuid(), result.getUuid());
+  }
 
-        List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
-        listOfResourceClassEntities.add(0, resourceClassEntity);
 
-        when(resourceClassRepository.findAll()).thenReturn(listOfResourceClassEntities);
+//    @Test
+//    void updateResourceClass() {
+//      ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
+//      resourceClassDTO.setName(resourceClassEntity.getName());
+//      resourceClassDTO.setUuid(resourceClassEntity.getUuid());
+//
+//      List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
+//      listOfResourceClassEntities.add(0, resourceClassEntity);
+//
+//      when(resourceClassRepository.findByUuid(any())).thenReturn(listOfResourceClassEntities);
+//      when(resourceClassRepository.save(any())).thenReturn(resourceClassEntity);
+//
+//      //TODO: How to insert the update value
+//      ResourceClassDTO result = resourceClassService.updateResourceClass(new UpdateResourceClassDTO(),uuid);
+//      Assertions.assertEquals(resourceClassDTO.getName(), result.getName());
+//      Assertions.assertEquals(resourceClassDTO.getUuid(), result.getUuid());
+//
+//    }
 
-        List<ResourceClassDTO> mockList = resourceClassService.getAllResourceClass();
-        Assertions.assertEquals(mockList.size(), 1);
-    }
+  @Test
+  void getAllResourceClass_Success() {
+    List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
+    listOfResourceClassEntities.add(0, resourceClassEntity);
 
-    @Test
-    void getByUuidResourceClass() {
-    }
+    when(resourceClassRepository.findAll()).thenReturn(listOfResourceClassEntities);
 
-    @Test
-    void deleteByUuidResourceClass() {
-    }
+    List<ResourceClassDTO> result = resourceClassService.getAllResourceClass();
+    Assertions.assertEquals(1, result.size());
+  }
+
+  @Test
+  void getAllResourceClass_Failure() {
+    List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
+    listOfResourceClassEntities.add(0, resourceClassEntity);
+
+    when(resourceClassRepository.findAll()).thenReturn(listOfResourceClassEntities);
+
+    List<ResourceClassDTO> result = resourceClassService.getAllResourceClass();
+    Assertions.assertNotEquals(2, result.size());
+  }
+
+  @Test
+  void getByUuidResourceClass_Success() {
+    List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
+    listOfResourceClassEntities.add(0, resourceClassEntity);
+
+    when(resourceClassRepository.findByUuid(any())).thenReturn(listOfResourceClassEntities);
+
+    ResourceClassDTO result = resourceClassService.getByUuidResourceClass(uuid);
+    Assertions.assertEquals(resourceClassEntity.getUuid(), result.getUuid());
+    Assertions.assertEquals(resourceClassEntity.getName(), result.getName());
+  }
+
+  @Test
+  void getByUuidResourceClass_Failure() {
+    List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
+    listOfResourceClassEntities.add(0, resourceClassEntity);
+
+    when(resourceClassRepository.findByUuid(any())).thenReturn(listOfResourceClassEntities);
+
+    ResourceClassDTO result = resourceClassService.getByUuidResourceClass(uuid);
+    Assertions.assertNotEquals(1, result.getUuid());
+    Assertions.assertNotEquals("Mac", result.getName());
+  }
+
+  @Test
+  void deleteByUuidResourceClass_Success() {
+    when(resourceClassRepository.deleteByUuid(any())).thenReturn(1L);
+
+    long result = resourceClassService.deleteByUuidResourceClass(uuid);
+    Assertions.assertEquals(1, result);
+  }
+
+  @Test
+  void deleteByUuidResourceClass_Failure() {
+    when(resourceClassRepository.deleteByUuid(any())).thenReturn(0L);
+
+    long result = resourceClassService.deleteByUuidResourceClass(uuid);
+    Assertions.assertNotEquals(1, result);
+  }
 }
