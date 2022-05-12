@@ -40,9 +40,9 @@ class ResourceClassRepositoryTest {
         resourceClassEntity.setName("Dell");
         resourceClassEntity.setId(1);
 
-        ResourceClassEntity mockEntity = resourceClassRepository.save(resourceClassEntity);
-        Assertions.assertEquals(resourceClassEntity.getName(), mockEntity.getName());
-        Assertions.assertEquals(resourceClassEntity.getUuid(), mockEntity.getUuid());
+        ResourceClassEntity result = resourceClassRepository.save(resourceClassEntity);
+        Assertions.assertEquals(resourceClassEntity.getName(), result.getName());
+        Assertions.assertEquals(resourceClassEntity.getUuid(), result.getUuid());
     }
 
     @Test
