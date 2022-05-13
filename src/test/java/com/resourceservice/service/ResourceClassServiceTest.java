@@ -2,24 +2,27 @@ package com.resourceservice.service;
 
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.ResourceClassEntity;
+import com.resourceservice.model.UpdateResourceClassDTO;
 import com.resourceservice.repository.ResourceClassRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ResourceClassServiceTest {
 
-  ResourceClassService resourceClassService;
+  @InjectMocks
+  private ResourceClassService classUnderTest;
   ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
 
   final String uuid = "65028399-b23c-4c08-a509-cb531c15286b";
@@ -29,8 +32,6 @@ class ResourceClassServiceTest {
 
   @BeforeEach
   void init() {
-    resourceClassService = new ResourceClassService(resourceClassRepository);
-
     resourceClassEntity.setUuid(uuid);
     resourceClassEntity.setName("Dell");
     resourceClassEntity.setId(1);
@@ -45,30 +46,37 @@ class ResourceClassServiceTest {
 
     when(resourceClassRepository.save(any())).thenReturn(resourceClassEntity);
 
-    ResourceClassDTO result = resourceClassService.createResourceClass(new CreateResourceClassDTO());
-    Assertions.assertEquals(resourceClassDTO.getName(), result.getName());
-    Assertions.assertEquals(resourceClassDTO.getUuid(), result.getUuid());
+    ResourceClassDTO result = classUnderTest.createResourceClass(
+            new CreateResourceClassDTO.Builder().withName("Dell").build()
+    );
+
+    assertThat(result).extracting("name", "uuid")
+            .isNotNull()
+            .isNotEmpty()
+            .contains("Dell", uuid);
   }
 
+  @Test
+  void updateResourceClass() {
+    ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
+    resourceClassDTO.setName(resourceClassEntity.getName());
+    resourceClassDTO.setUuid(resourceClassEntity.getUuid());
 
-//    @Test
-//    void updateResourceClass() {
-//      ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
-//      resourceClassDTO.setName(resourceClassEntity.getName());
-//      resourceClassDTO.setUuid(resourceClassEntity.getUuid());
-//
-//      List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
-//      listOfResourceClassEntities.add(0, resourceClassEntity);
-//
-//      when(resourceClassRepository.findByUuid(any())).thenReturn(listOfResourceClassEntities);
-//      when(resourceClassRepository.save(any())).thenReturn(resourceClassEntity);
-//
-//      //TODO: How to insert the update value
-//      ResourceClassDTO result = resourceClassService.updateResourceClass(new UpdateResourceClassDTO(),uuid);
-//      Assertions.assertEquals(resourceClassDTO.getName(), result.getName());
-//      Assertions.assertEquals(resourceClassDTO.getUuid(), result.getUuid());
-//
-//    }
+    List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
+    listOfResourceClassEntities.add(0, resourceClassEntity);
+
+    when(resourceClassRepository.findByUuid(any())).thenReturn(listOfResourceClassEntities);
+    when(resourceClassRepository.save(any())).thenReturn(resourceClassEntity);
+
+    ResourceClassDTO result = classUnderTest.updateResourceClass(
+            new UpdateResourceClassDTO.Builder().withName("Mac").build(), uuid
+    );
+    assertThat(result).extracting("name", "uuid")
+            .isNotNull()
+            .isNotEmpty()
+            .contains("Mac", uuid);
+
+  }
 
   @Test
   void getAllResourceClass_Success() {
@@ -77,8 +85,12 @@ class ResourceClassServiceTest {
 
     when(resourceClassRepository.findAll()).thenReturn(listOfResourceClassEntities);
 
-    List<ResourceClassDTO> result = resourceClassService.getAllResourceClass();
-    Assertions.assertEquals(1, result.size());
+    List<ResourceClassDTO> result = classUnderTest.getAllResourceClass();
+    assertThat(result).hasSize(1)
+            .flatExtracting("name", "uuid")
+            .isNotNull()
+            .isNotEmpty()
+            .contains("Dell", uuid);
   }
 
   @Test
@@ -88,8 +100,12 @@ class ResourceClassServiceTest {
 
     when(resourceClassRepository.findAll()).thenReturn(listOfResourceClassEntities);
 
-    List<ResourceClassDTO> result = resourceClassService.getAllResourceClass();
-    Assertions.assertNotEquals(2, result.size());
+    List<ResourceClassDTO> result = classUnderTest.getAllResourceClass();
+    assertThat(result).hasSize(1)
+            .flatExtracting("name", "uuid")
+            .isNotNull()
+            .isNotEmpty()
+            .doesNotContain("Mac", "1");
   }
 
   @Test
@@ -99,9 +115,11 @@ class ResourceClassServiceTest {
 
     when(resourceClassRepository.findByUuid(any())).thenReturn(listOfResourceClassEntities);
 
-    ResourceClassDTO result = resourceClassService.getByUuidResourceClass(uuid);
-    Assertions.assertEquals(resourceClassEntity.getUuid(), result.getUuid());
-    Assertions.assertEquals(resourceClassEntity.getName(), result.getName());
+    ResourceClassDTO result = classUnderTest.getByUuidResourceClass(uuid);
+    assertThat(result).extracting("name", "uuid")
+            .isNotNull()
+            .isNotEmpty()
+            .contains("Dell", uuid);
   }
 
   @Test
@@ -111,24 +129,28 @@ class ResourceClassServiceTest {
 
     when(resourceClassRepository.findByUuid(any())).thenReturn(listOfResourceClassEntities);
 
-    ResourceClassDTO result = resourceClassService.getByUuidResourceClass(uuid);
-    Assertions.assertNotEquals(1, result.getUuid());
-    Assertions.assertNotEquals("Mac", result.getName());
+    ResourceClassDTO result = classUnderTest.getByUuidResourceClass(uuid);
+    assertThat(result).extracting("name", "uuid")
+            .isNotNull()
+            .isNotEmpty()
+            .doesNotContain("Mac", "1");
   }
 
   @Test
   void deleteByUuidResourceClass_Success() {
     when(resourceClassRepository.deleteByUuid(any())).thenReturn(1L);
 
-    long result = resourceClassService.deleteByUuidResourceClass(uuid);
-    Assertions.assertEquals(1, result);
+    long result = classUnderTest.deleteByUuidResourceClass(uuid);
+    assertThat(result).isEqualTo(1)
+            .isNotNull();
   }
 
   @Test
   void deleteByUuidResourceClass_Failure() {
     when(resourceClassRepository.deleteByUuid(any())).thenReturn(0L);
 
-    long result = resourceClassService.deleteByUuidResourceClass(uuid);
-    Assertions.assertNotEquals(1, result);
+    long result = classUnderTest.deleteByUuidResourceClass(uuid);
+    assertThat(result).isEqualTo(0L)
+            .isNotNull();
   }
 }

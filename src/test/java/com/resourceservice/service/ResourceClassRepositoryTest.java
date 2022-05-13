@@ -2,7 +2,6 @@ package com.resourceservice.service;
 
 import com.resourceservice.model.ResourceClassEntity;
 import com.resourceservice.repository.ResourceClassRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,12 +12,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
 class ResourceClassRepositoryTest {
 
     @Autowired
-    private ResourceClassRepository resourceClassRepository;
+    private ResourceClassRepository classUnderTest;
 
     @BeforeEach
     void init() {
@@ -30,7 +31,7 @@ class ResourceClassRepositoryTest {
         List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
         listOfResourceClassEntities.add(0, resourceClassEntity);
 
-        resourceClassRepository.saveAll(listOfResourceClassEntities);
+        classUnderTest.saveAll(listOfResourceClassEntities);
     }
 
     @Test
@@ -40,38 +41,48 @@ class ResourceClassRepositoryTest {
         resourceClassEntity.setName("Dell");
         resourceClassEntity.setId(1);
 
-        ResourceClassEntity result = resourceClassRepository.save(resourceClassEntity);
-        Assertions.assertEquals(resourceClassEntity.getName(), result.getName());
-        Assertions.assertEquals(resourceClassEntity.getUuid(), result.getUuid());
+        ResourceClassEntity result = classUnderTest.save(resourceClassEntity);
+        assertThat(result).extracting("name", "uuid")
+                .isNotNull()
+                .isNotEmpty()
+                .contains(resourceClassEntity.getName(), resourceClassEntity.getUuid());
     }
 
     @Test
     void findAll_Success() {
-        List<ResourceClassEntity> mockList = resourceClassRepository.findAll();
-        Assertions.assertEquals(1, mockList.size());
+        List<ResourceClassEntity> result = classUnderTest.findAll();
+        assertThat(result).hasSize(1)
+                .flatExtracting("name", "uuid")
+                .isNotNull()
+                .isNotEmpty()
+                .contains("Mac", "1");
     }
 
     @Test
     void findByUuid_Success() {
-        List<ResourceClassEntity> mockList = resourceClassRepository.findByUuid("1");
-        Assertions.assertEquals(1, mockList.size());
+        List<ResourceClassEntity> result = classUnderTest.findByUuid("1");
+        assertThat(result).hasSize(1)
+                .flatExtracting("name", "uuid")
+                .isNotNull()
+                .isNotEmpty()
+                .contains("Mac", "1");
     }
 
     @Test
     void findByUuid_Failure() {
-        List<ResourceClassEntity> mockList = resourceClassRepository.findByUuid("2");
-        Assertions.assertEquals(0, mockList.size());
+        List<ResourceClassEntity> result = classUnderTest.findByUuid("2");
+        assertThat(result).hasSize(0);
     }
 
     @Test
     void deleteByUuid_Success() {
-        Long numberOfDeletedEntities = resourceClassRepository.deleteByUuid("1");
-        Assertions.assertEquals(1, numberOfDeletedEntities);
+        Long result = classUnderTest.deleteByUuid("1");
+        assertThat(result).isEqualTo(1);
     }
 
     @Test
     void deleteByUuid_Failure() {
-        Long numberOfDeletedEntities = resourceClassRepository.deleteByUuid("2");
-        Assertions.assertEquals(0, numberOfDeletedEntities);
+        Long result = classUnderTest.deleteByUuid("2");
+        assertThat(result).isEqualTo(0);
     }
 }
