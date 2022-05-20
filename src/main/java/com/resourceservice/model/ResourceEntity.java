@@ -4,6 +4,8 @@ package com.resourceservice.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Table(name = "TBL_RESOURCES")
@@ -14,23 +16,41 @@ public class ResourceEntity {
     @GeneratedValue
     Integer id;
 
-    String owner;
+    String name;
 
     String uuid;
 
-    //uuid of the hardware as well ?
-
+    @ManyToOne
+    @JoinColumn(name = "resource_class_entity_id")
+    ResourceClassEntity resourceClassEntity;
     String description;
 
-    public ResourceEntity(Integer ID, String owner, String description) {
-        super();
-        this.id = ID;
-        this.owner = owner;
-        this.description = description;
+    public ResourceClassEntity getResourceClassEntity() {
+        return resourceClassEntity;
+    }
+
+    public void setResourceClassEntity(ResourceClassEntity resourceClassEntity) {
+        this.resourceClassEntity = resourceClassEntity;
     }
 
     public ResourceEntity() {
 
+    }
+
+    public ResourceEntity(Integer id, String name, String uuid, String description, ResourceClassEntity resourceClassEntity) {
+        this.id = id;
+        this.name = name;
+        this.uuid = uuid;
+        this.description = description;
+        this.resourceClassEntity = resourceClassEntity;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Integer getID() {
@@ -49,19 +69,13 @@ public class ResourceEntity {
         this.uuid = uuid;
     }
 
-    public String getOwner() {
-        return owner;
+    public String getName() {
+        return name;
     }
 
-    public void setOwner(String user) {
-        this.owner = user;
+    public void setName(String user) {
+        this.name = user;
     }
 
-    public String getDescription() {
-        return description;
-    }
 
-    public void setDescription(String model) {
-        this.description = model;
-    }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.UpdateResourceClassDTO;
 import org.springframework.beans.factory.annotation.Autowired;

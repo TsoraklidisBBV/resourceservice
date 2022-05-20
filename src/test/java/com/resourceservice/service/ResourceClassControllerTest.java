@@ -4,6 +4,7 @@ package com.resourceservice.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.resourceservice.controller.ResourceClassController;
 import com.resourceservice.model.ResourceClassDTO;
+import com.resourceservice.model.ResourceClassEntity;
 import com.resourceservice.model.ResourceEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +31,26 @@ public class ResourceClassControllerTest {
     @MockBean
     ResourceClassService resourceClassService;
 
+    final String uuid = "65028399-b23c-4c08-a509-cb531c15286b";
+
+
     @Test
     public void createResourceObject_Success() throws Exception {
+        ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
+        resourceClassEntity.setUuid(uuid);
+        resourceClassEntity.setName("Dell");
+        resourceClassEntity.setId(1);
+
         ResourceEntity resourceEntity = new ResourceEntity(
                 1,
                 "Dan",
-                "Dell"
+                uuid,
+                "red",
+                resourceClassEntity
         );
 
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
-        resourceClassDTO.setUuid("1");
+        resourceClassDTO.setUuid(uuid);
         resourceClassDTO.setName("Dell");
 
         when(resourceClassService.createResourceClass(any())).thenReturn(resourceClassDTO);
@@ -59,7 +70,7 @@ public class ResourceClassControllerTest {
     @Test
     public void getAllResourceObjects_Success() throws Exception {
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
-        resourceClassDTO.setUuid("1");
+        resourceClassDTO.setUuid(uuid);
         resourceClassDTO.setName("Dell");
 
         List<ResourceClassDTO> listOfResourceClassEntities = new ArrayList<>();
@@ -69,7 +80,7 @@ public class ResourceClassControllerTest {
         when(resourceClassService.getAllResourceClass()).thenReturn(listOfResourceClassEntities);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/retreiveallresourceclass"))
+                        MockMvcRequestBuilders.get("/retrieveallresourceclass"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.content().json("[{}]"));
@@ -78,7 +89,7 @@ public class ResourceClassControllerTest {
     @Test
     public void getByUuidResourceObject_Success() throws Exception {
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
-        resourceClassDTO.setUuid("1");
+        resourceClassDTO.setUuid(uuid);
         resourceClassDTO.setName("Dell");
 
         when(resourceClassService.getByUuidResourceClass(any())).thenReturn(resourceClassDTO);
@@ -92,10 +103,17 @@ public class ResourceClassControllerTest {
 
     @Test
     public void updateResourceObject_Success() throws Exception {
+        ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
+        resourceClassEntity.setUuid(uuid);
+        resourceClassEntity.setName("Mac");
+        resourceClassEntity.setId(1);
+
         ResourceEntity resourceEntity = new ResourceEntity(
                 1,
                 "Dan",
-                "Dell"
+                uuid,
+                "red",
+                resourceClassEntity
         );
 
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();

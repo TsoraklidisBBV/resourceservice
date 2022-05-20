@@ -18,13 +18,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 class ResourceClassRepositoryTest {
 
+    final String uuid = "65028399-b23c-4c08-a509-cb531c15286b";
+
     @Autowired
     private ResourceClassRepository classUnderTest;
 
     @BeforeEach
     void init() {
         ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
-        resourceClassEntity.setUuid("1");
+        resourceClassEntity.setUuid(uuid);
         resourceClassEntity.setName("Mac");
         resourceClassEntity.setId(1);
 
@@ -37,7 +39,7 @@ class ResourceClassRepositoryTest {
     @Test
     void save_Success() {
         ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
-        resourceClassEntity.setUuid("1");
+        resourceClassEntity.setUuid(uuid);
         resourceClassEntity.setName("Dell");
         resourceClassEntity.setId(1);
 
@@ -55,17 +57,17 @@ class ResourceClassRepositoryTest {
                 .flatExtracting("name", "uuid")
                 .isNotNull()
                 .isNotEmpty()
-                .contains("Mac", "1");
+                .contains("Mac", uuid);
     }
 
     @Test
     void findByUuid_Success() {
-        List<ResourceClassEntity> result = classUnderTest.findByUuid("1");
+        List<ResourceClassEntity> result = classUnderTest.findByUuid(uuid);
         assertThat(result).hasSize(1)
                 .flatExtracting("name", "uuid")
                 .isNotNull()
                 .isNotEmpty()
-                .contains("Mac", "1");
+                .contains("Mac", uuid);
     }
 
     @Test
@@ -76,7 +78,7 @@ class ResourceClassRepositoryTest {
 
     @Test
     void deleteByUuid_Success() {
-        Long result = classUnderTest.deleteByUuid("1");
+        Long result = classUnderTest.deleteByUuid(uuid);
         assertThat(result).isEqualTo(1);
     }
 

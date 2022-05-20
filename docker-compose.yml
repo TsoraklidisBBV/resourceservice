@@ -1,0 +1,42 @@
+version: "3.1"
+
+services:
+  h2:
+    container_name: 'h2'
+    hostname: 'h2'
+    image: 1000kit/h2
+    environment:
+      SPRING_APPLICATION_JSON: >
+        {
+          "db": {
+            "h2": true,
+            "mysql": false,
+            "schema": true,
+            "seed": true,
+            "populate": true
+          }
+        }
+    ports:
+      - "8181:8181"
+      - "1521:1521"
+  spring:
+    depends_on:
+      - h2
+    build: .
+    container_name: resourceservice-spring
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        spring.flyway.enabled=false
+        spring.flyway.locations=classpath:db/migration
+        spring.h2.console.enabled=true
+        spring.datasource.url=jdbc:h2:mem:testdb
+        spring.datasource.username=sa
+        spring.datasource.password=
+        spring.jpa.hibernate.ddl-auto=update
+       }'
+volumes:
+  h2:
+
+

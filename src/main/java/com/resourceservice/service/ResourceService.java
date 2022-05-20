@@ -1,12 +1,17 @@
 package com.resourceservice.service;
 
+import com.resourceservice.model.CreateResourceDTO;
+import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.ResourceClassEntity;
+import com.resourceservice.model.ResourceDTO;
 import com.resourceservice.model.ResourceEntity;
+import com.resourceservice.model.UpdateResourceDTO;
 import com.resourceservice.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,20 +21,41 @@ public class ResourceService {
     @Autowired
     private ResourceRepository repository;
 
-//    public ResourceEntity createResource(CreateResourceDTO resourceDTO) {
-//        ResourceEntity result = new ResourceEntity();
-//        result.setName(resourceDTO.getName());
-//        result.setUuid(UUID.randomUUID().toString());
-//        repository.save(result);
-//        return result;
-//    }
+    public ResourceDTO createResource(CreateResourceDTO createResourceDTO) {
+        ResourceEntity result = new ResourceEntity();
+        result.setName(createResourceDTO.getName());
+        result.setUuid(UUID.randomUUID().toString());
+        result.setDescription(createResourceDTO.getDescription());
+        ResourceEntity savedResourceEntity = repository.save(result);
 
-    public ResourceEntity getResourcesByUuid(String resourceUuid) throws IOException {
-        List<ResourceEntity> modelList = repository.findByUuid(resourceUuid);
-        return findResourceByUuid(modelList, resourceUuid);
+        ResourceDTO resourceDTO = new ResourceDTO();
+        resourceDTO.setName(savedResourceEntity.getName());
+        resourceDTO.setUuid(savedResourceEntity.getUuid());
+        return resourceDTO;
     }
 
-    public long deleteResourcesByUuid(String resourceUuid) {
+    public ResourceDTO updateResource(UpdateResourceDTO updateResourceDTO, String uuid) {
+        ResourceEntity resourceEntity = repository.findByUuid(uuid).get(0);
+        resourceEntity.setName(updateResourceDTO.getName());
+        ResourceEntity savedResourceEntity = repository.save(resourceEntity);
+
+        ResourceDTO resourceDTO = new ResourceDTO();
+        resourceDTO.setName(savedResourceEntity.getName());
+        resourceDTO.setUuid(uuid);
+        return resourceDTO;
+    }
+
+    public List<ResourceDTO> getAllResource() {
+        List<ResourceEntity> resourceEntityList = repository.findAll();
+        return mapResourceEntityToDTO(resourceEntityList);
+    }
+
+    public ResourceDTO getByUuidResource(String resourceUuid) throws IOException {
+        List<ResourceEntity> resourceEntityList = repository.findByUuid(resourceUuid);
+        return mapResourceEntityToDTO(resourceEntityList).get(0);
+    }
+
+    public long deleteByUuidResource(String resourceUuid) {
         return repository.deleteByUuid(resourceUuid);
     }
 
@@ -40,5 +66,24 @@ public class ResourceService {
         }
 
         return modelList.get(0);
+    }
+
+    private List<ResourceDTO> mapResourceEntityToDTO(List<ResourceEntity> resourceEntityList) {
+        if (resourceEntityList.isEmpty()) {
+            System.out.println("There is no Resource to return");
+            return null;
+        }
+
+        List<ResourceDTO> resourceDTOList = new ArrayList<>();
+
+        for (ResourceEntity resourceModel : resourceEntityList) {
+            ResourceDTO resourceObjects = new ResourceDTO();
+
+            resourceObjects.setName(resourceModel.getName());
+            resourceObjects.setUuid(resourceModel.getUuid());
+            resourceDTOList.add(resourceObjects);
+        }
+
+        return resourceDTOList;
     }
 }

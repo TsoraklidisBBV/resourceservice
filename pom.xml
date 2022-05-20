@@ -11,6 +11,7 @@
     <groupId>com</groupId>
     <artifactId>resourceservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <name>ResourceService</name>
     <description>A Project to control Resources</description>
     <properties>

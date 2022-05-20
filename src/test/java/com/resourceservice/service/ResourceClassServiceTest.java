@@ -1,5 +1,6 @@
 package com.resourceservice.service;
 
+import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.ResourceClassEntity;
 import com.resourceservice.model.UpdateResourceClassDTO;
