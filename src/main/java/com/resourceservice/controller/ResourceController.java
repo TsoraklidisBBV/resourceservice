@@ -34,7 +34,7 @@ public class ResourceController {
     @PostMapping(path = "/resource",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResourceDTO> createResourceObject(@RequestBody CreateResourceDTO createResourceDTO) {
+    public ResponseEntity<ResourceDTO> createResourceObject(@RequestBody CreateResourceDTO createResourceDTO) throws IOException {
         ResourceDTO resourceDTO = resourceService.createResource(createResourceDTO);
         var location = URI.create(String.format("/resource/%s", resourceDTO.getUuid()));
         return ResponseEntity.created(location).body(resourceDTO);
