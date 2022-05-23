@@ -2,7 +2,6 @@ package com.resourceservice.controller;
 
 import com.resourceservice.model.CreateResourceDTO;
 import com.resourceservice.model.ResourceDTO;
-import com.resourceservice.model.ResourceEntity;
 import com.resourceservice.model.UpdateResourceDTO;
 import com.resourceservice.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ public class ResourceController {
         return ResponseEntity.created(location).body(resourceDTO);
     }
 
-    @GetMapping(path = "retrieveallresource",
+    @GetMapping(path = "/retrieveallresource",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<List<ResourceDTO>> getAllResourceObject() {

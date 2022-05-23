@@ -4,6 +4,7 @@ public class ResourceDTO {
 
     String name;
     String uuid;
+    ResourceClassDTO resourceClassDTO;
 
     public String getName() {
         return name;
@@ -21,5 +22,11 @@ public class ResourceDTO {
         this.uuid = uuid;
     }
 
+    public ResourceClassDTO getResourceClassDTO() {
+        return resourceClassDTO;
+    }
 
+    public void setResourceClassDTO(ResourceClassDTO resourceClassDTO) {
+        this.resourceClassDTO = resourceClassDTO;
+    }
 }

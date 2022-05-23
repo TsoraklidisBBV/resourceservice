@@ -4,6 +4,9 @@ public class UpdateResourceDTO {
 
     String name;
 
+    //String uuid for ResourceEntity search
+
+
     public String getName() {
         return name;
     }

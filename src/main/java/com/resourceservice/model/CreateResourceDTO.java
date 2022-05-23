@@ -5,6 +5,9 @@ public class CreateResourceDTO {
     String name;
     String description;
 
+    //String uuid , search for the entity
+
+
     public String getName() {
         return name;
     }
@@ -17,6 +20,8 @@ public class CreateResourceDTO {
     public static final class CreateResourceDTOBuilder {
         String name;
         String description;
+        //this needs to change
+        //TODO: ResourceClassEntity resourceClassEntity;
 
         private CreateResourceDTOBuilder() {
         }
@@ -35,9 +40,15 @@ public class CreateResourceDTO {
             return this;
         }
 
+//        public CreateResourceDTOBuilder withResourceClassEntity(ResourceClassEntity resourceClassEntity) {
+//            this.resourceClassEntity = resourceClassEntity;
+//            return this;
+//        }
+
         public CreateResourceDTO build() {
             CreateResourceDTO createResourceDTO = new CreateResourceDTO();
             createResourceDTO.name = this.name;
+            //   createResourceDTO.resourceClassEntity = this.resourceClassEntity;
             createResourceDTO.description = this.description;
             return createResourceDTO;
         }

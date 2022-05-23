@@ -26,6 +26,7 @@ public class ResourceService {
         result.setName(createResourceDTO.getName());
         result.setUuid(UUID.randomUUID().toString());
         result.setDescription(createResourceDTO.getDescription());
+        //use uuid to get the ResourceClassEntity
         ResourceEntity savedResourceEntity = repository.save(result);
 
         ResourceDTO resourceDTO = new ResourceDTO();
@@ -78,9 +79,13 @@ public class ResourceService {
 
         for (ResourceEntity resourceModel : resourceEntityList) {
             ResourceDTO resourceObjects = new ResourceDTO();
+            ResourceClassDTO resourceClassObjects = new ResourceClassDTO();
+            resourceClassObjects.setName(resourceModel.getResourceClassEntity().getName());
+            resourceClassObjects.setUuid(resourceModel.getResourceClassEntity().getUuid());
 
             resourceObjects.setName(resourceModel.getName());
             resourceObjects.setUuid(resourceModel.getUuid());
+            resourceObjects.setResourceClassDTO(resourceClassObjects);
             resourceDTOList.add(resourceObjects);
         }
 

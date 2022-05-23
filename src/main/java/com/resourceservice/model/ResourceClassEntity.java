@@ -13,12 +13,7 @@ public class ResourceClassEntity {
     @Id
     @GeneratedValue
     Integer id;
-    // technical value
-//    @JoinTable(
-//            name = "TBL_RESOURCES",
-//            joinColumns = @JoinColumn(name = "resource_class_entity_uuid", referencedColumnName = "uuid"),
-//            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "uuid")
-//    )
+
     String uuid;
     // business value
     String name;
