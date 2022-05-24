@@ -31,9 +31,6 @@ public class ResourceService {
         resourceEntity.setUuid(UUID.randomUUID().toString());
         resourceEntity.setDescription(createResourceDTO.getDescription());
 
-        //  ResourceDTO returnFromGet = getByUuidResource(createResourceDTO.getResourceClassEntity().getUuid());
-
-        //use uuid to get the ResourceClassEntity
         List<ResourceClassEntity> resourceClassEntityList = resourceClassRepository.findByUuid(createResourceDTO.getResourceClassDTO().getUuid());
         if (resourceClassEntityList.isEmpty()) {
             System.out.println("There is no Resource Class to return");
