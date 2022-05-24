@@ -3,9 +3,11 @@ package com.resourceservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.resourceservice.controller.ResourceClassController;
+import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.ResourceClassEntity;
 import com.resourceservice.model.ResourceEntity;
+import com.resourceservice.model.UpdateResourceClassDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -36,18 +38,7 @@ public class ResourceClassControllerTest {
 
     @Test
     public void createResourceObject_Success() throws Exception {
-        ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
-        resourceClassEntity.setUuid(uuid);
-        resourceClassEntity.setName("Dell");
-        resourceClassEntity.setId(1);
-
-        ResourceEntity resourceEntity = new ResourceEntity(
-                1,
-                "Dan",
-                uuid,
-                "red",
-                resourceClassEntity
-        );
+        CreateResourceClassDTO createResourceClassDTO = new CreateResourceClassDTO.Builder().withName("Dell").build();
 
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
         resourceClassDTO.setUuid(uuid);
@@ -57,7 +48,7 @@ public class ResourceClassControllerTest {
 
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/resourceclass")
-                                .content(asJsonString(resourceEntity))
+                                .content(asJsonString(createResourceClassDTO))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
@@ -75,7 +66,6 @@ public class ResourceClassControllerTest {
 
         List<ResourceClassDTO> listOfResourceClassEntities = new ArrayList<>();
         listOfResourceClassEntities.add(0, resourceClassDTO);
-
 
         when(resourceClassService.getAllResourceClass()).thenReturn(listOfResourceClassEntities);
 
@@ -103,28 +93,17 @@ public class ResourceClassControllerTest {
 
     @Test
     public void updateResourceObject_Success() throws Exception {
-        ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
-        resourceClassEntity.setUuid(uuid);
-        resourceClassEntity.setName("Mac");
-        resourceClassEntity.setId(1);
-
-        ResourceEntity resourceEntity = new ResourceEntity(
-                1,
-                "Dan",
-                uuid,
-                "red",
-                resourceClassEntity
-        );
+        UpdateResourceClassDTO updateResourceClassDTO = new UpdateResourceClassDTO.Builder().withName("Mac").build();
 
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
-        resourceClassDTO.setUuid("1");
+        resourceClassDTO.setUuid(uuid);
         resourceClassDTO.setName("Dell");
 
         when(resourceClassService.updateResourceClass(any(), any())).thenReturn(resourceClassDTO);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.put("/resourceclass/{uuid}", "1")
-                                .content(asJsonString(resourceEntity))
+                        MockMvcRequestBuilders.put("/resourceclass/{uuid}", uuid)
+                                .content(asJsonString(updateResourceClassDTO))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
@@ -138,10 +117,10 @@ public class ResourceClassControllerTest {
         when(resourceClassService.deleteByUuidResourceClass(any())).thenReturn(1L);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.delete("/resourceclass/{uuid}", "1"))
+                        MockMvcRequestBuilders.delete("/resourceclass/{uuid}", uuid))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().string("Resource with uuid: 1 was Deleted"));
+                .andExpect(MockMvcResultMatchers.content().string("Resource with uuid: " + uuid + " was Deleted"));
     }
 
     private String asJsonString(final Object obj) {

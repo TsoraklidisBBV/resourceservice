@@ -17,9 +17,9 @@ public class ResourceClassService {
     @Autowired
     private ResourceClassRepository resourceClassRepository;
 
-    public ResourceClassDTO createResourceClass(CreateResourceClassDTO resourceClassDTO) {
+    public ResourceClassDTO createResourceClass(CreateResourceClassDTO createResourceClassDTO) {
         ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
-        resourceClassEntity.setName(resourceClassDTO.getName());
+        resourceClassEntity.setName(createResourceClassDTO.getName());
         resourceClassEntity.setUuid(UUID.randomUUID().toString());
         ResourceClassEntity savedResourceClass = resourceClassRepository.save(resourceClassEntity);
 

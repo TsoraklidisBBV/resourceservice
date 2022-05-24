@@ -36,7 +36,7 @@ public class CreateResourceDTO {
         ResourceClassDTO resourceClassDTO;
 
 
-        private CreateResourceDTOBuilder() {
+        public CreateResourceDTOBuilder() {
         }
 
         public static CreateResourceDTOBuilder aCreateResourceDTO() {
