@@ -32,32 +32,24 @@ public class ResourceService {
         resourceEntity.setDescription(createResourceDTO.getDescription());
 
         List<ResourceClassEntity> resourceClassEntityList = resourceClassRepository.findByUuid(createResourceDTO.getResourceClassDTO().getUuid());
-        if (resourceClassEntityList.isEmpty()) {
-            System.out.println("There is no Resource Class to return");
-            return null;
-        }
+        //TODO: do a ResourceClasNotFoundException in the ControllerExceptionHnadler
+        //        if (resourceClassEntityList.isEmpty()) {
+//            System.out.println("There is no Resource Class to return");
+//            return null;
+//        }
 
         resourceEntity.setResourceClassEntity(resourceClassEntityList.get(0));
-        return saveResourceEntity(resourceEntity);
+        ResourceEntity savedResourceEntity = repository.save(resourceEntity);
+        ResourceClassDTO resourceClassDTO = entityToClassDTO(resourceEntity);
+        return entityToDTO(savedResourceEntity, resourceClassDTO);
     }
 
     public ResourceDTO updateResource(UpdateResourceDTO updateResourceDTO, String uuid) {
         ResourceEntity resourceEntity = repository.findByUuid(uuid).get(0);
         resourceEntity.setName(updateResourceDTO.getName());
-        return saveResourceEntity(resourceEntity);
-    }
-
-    private ResourceDTO saveResourceEntity(ResourceEntity resourceEntity) {
         ResourceEntity savedResourceEntity = repository.save(resourceEntity);
-        ResourceClassDTO resourceClassObject = new ResourceClassDTO();
-        resourceClassObject.setName(resourceEntity.getResourceClassEntity().getName());
-        resourceClassObject.setUuid(resourceEntity.getResourceClassEntity().getUuid());
-
-        ResourceDTO resourceDTO = new ResourceDTO();
-        resourceDTO.setName(savedResourceEntity.getName());
-        resourceDTO.setUuid(savedResourceEntity.getUuid());
-        resourceDTO.setResourceClassDTO(resourceClassObject);
-        return resourceDTO;
+        ResourceClassDTO resourceClassDTO = entityToClassDTO(resourceEntity);
+        return entityToDTO(savedResourceEntity, resourceClassDTO);
     }
 
     public List<ResourceDTO> getAllResource() {
@@ -83,19 +75,27 @@ public class ResourceService {
         List<ResourceDTO> resourceDTOList = new ArrayList<>();
 
         for (ResourceEntity resourceModel : resourceEntityList) {
-            ResourceDTO resourceObjects = new ResourceDTO();
-            ResourceClassDTO resourceClassObjects = new ResourceClassDTO();
-            resourceClassObjects.setName(resourceModel.getResourceClassEntity().getName());
-            resourceClassObjects.setUuid(resourceModel.getResourceClassEntity().getUuid());
-
-            resourceObjects.setName(resourceModel.getName());
-            resourceObjects.setUuid(resourceModel.getUuid());
-            resourceObjects.setResourceClassDTO(resourceClassObjects);
+            ResourceClassDTO resourceClassDTO = entityToClassDTO(resourceModel);
+            ResourceDTO resourceObjects = entityToDTO(resourceModel, resourceClassDTO);
             resourceDTOList.add(resourceObjects);
         }
 
         return resourceDTOList;
     }
 
+    private ResourceClassDTO entityToClassDTO(ResourceEntity resourceEntity) {
+        ResourceClassDTO resourceClassObject = new ResourceClassDTO();
+        resourceClassObject.setName(resourceEntity.getResourceClassEntity().getName());
+        resourceClassObject.setUuid(resourceEntity.getResourceClassEntity().getUuid());
 
+        return resourceClassObject;
+    }
+
+    private ResourceDTO entityToDTO(ResourceEntity resourceEntity, ResourceClassDTO resourceClassDTO) {
+        ResourceDTO resourceDTO = new ResourceDTO();
+        resourceDTO.setName(resourceEntity.getName());
+        resourceDTO.setUuid(resourceEntity.getUuid());
+        resourceDTO.setResourceClassDTO(resourceClassDTO);
+        return resourceDTO;
+    }
 }
