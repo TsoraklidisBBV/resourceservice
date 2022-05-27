@@ -4,7 +4,8 @@ public class CreateResourceDTO {
 
     String name;
     String description;
-    ResourceClassDTO resourceClassDTO;
+
+    String resourceClassUuid;
 
     public String getName() {
         return name;
@@ -14,14 +15,15 @@ public class CreateResourceDTO {
         return description;
     }
 
-    public ResourceClassDTO getResourceClassDTO() {
-        return resourceClassDTO;
+    public String getResourceClassUuid() {
+        return resourceClassUuid;
     }
+
 
     public static final class CreateResourceDTOBuilder {
         String name;
         String description;
-        ResourceClassDTO resourceClassDTO;
+        String resourceClassUuid;
 
         public CreateResourceDTOBuilder() {
         }
@@ -40,16 +42,16 @@ public class CreateResourceDTO {
             return this;
         }
 
-        public CreateResourceDTOBuilder withResourceClassDTO(ResourceClassDTO resourceClassDTO) {
-            this.resourceClassDTO = resourceClassDTO;
+        public CreateResourceDTOBuilder withResourceClassUuid(String resourceClassUuid) {
+            this.resourceClassUuid = resourceClassUuid;
             return this;
         }
 
         public CreateResourceDTO build() {
             CreateResourceDTO createResourceDTO = new CreateResourceDTO();
-            createResourceDTO.name = this.name;
-            createResourceDTO.resourceClassDTO = this.resourceClassDTO;
             createResourceDTO.description = this.description;
+            createResourceDTO.name = this.name;
+            createResourceDTO.resourceClassUuid = this.resourceClassUuid;
             return createResourceDTO;
         }
     }

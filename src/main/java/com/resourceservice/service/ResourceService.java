@@ -1,5 +1,9 @@
 package com.resourceservice.service;
 
+import com.resourceservice.exception.ResourceBadRequestException;
+import com.resourceservice.exception.ResourceClassBadRequestException;
+import com.resourceservice.exception.ResourceClassNotFoundException;
+import com.resourceservice.exception.ResourceNotFoundException;
 import com.resourceservice.model.CreateResourceDTO;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.ResourceClassEntity;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,71 +36,92 @@ public class ResourceService {
         resourceEntity.setUuid(UUID.randomUUID().toString());
         resourceEntity.setDescription(createResourceDTO.getDescription());
 
-        List<ResourceClassEntity> resourceClassEntityList = resourceClassRepository.findByUuid(createResourceDTO.getResourceClassDTO().getUuid());
-        //TODO: do a ResourceClasNotFoundException in the ControllerExceptionHnadler
-        //        if (resourceClassEntityList.isEmpty()) {
-//            System.out.println("There is no Resource Class to return");
-//            return null;
-//        }
+        Optional<ResourceClassEntity> resourceClassEntityList = resourceClassRepository
+                .findByUuid(createResourceDTO.getResourceClassUuid());
+        if (resourceClassEntityList.isEmpty()) {
+            System.out.println("There is no Resource Class to return");
+            throw new ResourceClassBadRequestException(createResourceDTO.getResourceClassUuid());
+        }
 
-        resourceEntity.setResourceClassEntity(resourceClassEntityList.get(0));
+        resourceEntity.setResourceClassEntity(resourceClassEntityList.get());
         ResourceEntity savedResourceEntity = repository.save(resourceEntity);
-        ResourceClassDTO resourceClassDTO = entityToClassDTO(resourceEntity);
-        return entityToDTO(savedResourceEntity, resourceClassDTO);
+        //TODO: does this need to throw an exception?
+
+        ResourceClassDTO resourceClassDTO = entityToClassDTO(resourceEntity.getResourceClassEntity());
+        ResourceDTO result = entityToDTO(savedResourceEntity);
+        result.setResourceClassDTO(resourceClassDTO);
+        return result;
     }
 
-    public ResourceDTO updateResource(UpdateResourceDTO updateResourceDTO, String uuid) {
-        ResourceEntity resourceEntity = repository.findByUuid(uuid).get(0);
-        resourceEntity.setName(updateResourceDTO.getName());
-        ResourceEntity savedResourceEntity = repository.save(resourceEntity);
-        ResourceClassDTO resourceClassDTO = entityToClassDTO(resourceEntity);
-        return entityToDTO(savedResourceEntity, resourceClassDTO);
+    public ResourceDTO updateResource(UpdateResourceDTO updateResourceDTO, String resourceUuid) {
+        Optional<ResourceEntity> resourceEntity = repository.findByUuid(resourceUuid);
+        if (resourceEntity.isEmpty()) {
+            System.out.println("There is no Resource with UUID: " + resourceUuid);
+            throw new ResourceNotFoundException(resourceUuid);
+        }
+
+        resourceEntity.get().setName(updateResourceDTO.getName());
+        ResourceEntity savedResourceEntity = repository.save(resourceEntity.get());
+        ResourceClassDTO resourceClassDTO = entityToClassDTO(resourceEntity.get().getResourceClassEntity());
+        ResourceDTO result = entityToDTO(savedResourceEntity);
+        result.setResourceClassDTO(resourceClassDTO);
+        return result;
     }
 
     public List<ResourceDTO> getAllResource() {
         List<ResourceEntity> resourceEntityList = repository.findAll();
+        if (resourceEntityList.isEmpty()) {
+            System.out.println("There are no Resources");
+            throw new ResourceNotFoundException(null);
+        }
         return mapResourceEntityToDTO(resourceEntityList);
     }
 
     public ResourceDTO getByUuidResource(String resourceUuid) throws IOException {
-        List<ResourceEntity> resourceEntityList = repository.findByUuid(resourceUuid);
-        return mapResourceEntityToDTO(resourceEntityList).get(0);
+        Optional<ResourceEntity> resourceEntity = repository.findByUuid(resourceUuid);
+        if (resourceEntity.isEmpty()) {
+            System.out.println("There is no Resource with UUID: " + resourceUuid);
+            throw new ResourceNotFoundException(resourceUuid);
+        }
+
+        return entityToDTO(resourceEntity.get());
     }
 
     public long deleteByUuidResource(String resourceUuid) {
-        return repository.deleteByUuid(resourceUuid);
+        long result = repository.deleteByUuid(resourceUuid);
+        if (result != 1L) {
+            System.out.println("Error trying to delete Resource with " + resourceUuid);
+            throw new ResourceNotFoundException(resourceUuid);
+        }
+
+        return result;
     }
 
     private List<ResourceDTO> mapResourceEntityToDTO(List<ResourceEntity> resourceEntityList) {
-        if (resourceEntityList.isEmpty()) {
-            System.out.println("There is no Resource to return");
-            return null;
-        }
-
         List<ResourceDTO> resourceDTOList = new ArrayList<>();
 
         for (ResourceEntity resourceModel : resourceEntityList) {
-            ResourceClassDTO resourceClassDTO = entityToClassDTO(resourceModel);
-            ResourceDTO resourceObjects = entityToDTO(resourceModel, resourceClassDTO);
+            ResourceClassDTO resourceClassDTO = entityToClassDTO(resourceModel.getResourceClassEntity());
+            ResourceDTO resourceObjects = entityToDTO(resourceModel);
+            resourceObjects.setResourceClassDTO(resourceClassDTO);
             resourceDTOList.add(resourceObjects);
         }
 
         return resourceDTOList;
     }
 
-    private ResourceClassDTO entityToClassDTO(ResourceEntity resourceEntity) {
+    private ResourceClassDTO entityToClassDTO(ResourceClassEntity resourceClassEntity) {
         ResourceClassDTO resourceClassObject = new ResourceClassDTO();
-        resourceClassObject.setName(resourceEntity.getResourceClassEntity().getName());
-        resourceClassObject.setUuid(resourceEntity.getResourceClassEntity().getUuid());
+        resourceClassObject.setName(resourceClassEntity.getName());
+        resourceClassObject.setUuid(resourceClassEntity.getUuid());
 
         return resourceClassObject;
     }
 
-    private ResourceDTO entityToDTO(ResourceEntity resourceEntity, ResourceClassDTO resourceClassDTO) {
+    private ResourceDTO entityToDTO(ResourceEntity resourceEntity) {
         ResourceDTO resourceDTO = new ResourceDTO();
         resourceDTO.setName(resourceEntity.getName());
         resourceDTO.setUuid(resourceEntity.getUuid());
-        resourceDTO.setResourceClassDTO(resourceClassDTO);
         return resourceDTO;
     }
 }

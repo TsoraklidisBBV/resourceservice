@@ -2,8 +2,12 @@ package com.resourceservice.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import com.resourceservice.exception.ResourceBadRequestException;
+import com.resourceservice.exception.ResourceClassBadRequestException;
+import com.resourceservice.exception.ResourceClassNotFoundException;
 import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.UpdateResourceClassDTO;
@@ -30,9 +34,9 @@ public class ResourceClassService {
     }
 
     public ResourceClassDTO updateResourceClass(UpdateResourceClassDTO updateResourceClassDTO, String uuid) {
-        ResourceClassEntity resourceClassEntity = resourceClassRepository.findByUuid(uuid).get(0);
-        resourceClassEntity.setName(updateResourceClassDTO.getName());
-        ResourceClassEntity savedResourceClassEntity = resourceClassRepository.save(resourceClassEntity);
+        Optional<ResourceClassEntity> resourceClassEntity = resourceClassRepository.findByUuid(uuid);
+        resourceClassEntity.get().setName(updateResourceClassDTO.getName());
+        ResourceClassEntity savedResourceClassEntity = resourceClassRepository.save(resourceClassEntity.get());
 
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
         resourceClassDTO.setName(savedResourceClassEntity.getName());
@@ -46,8 +50,8 @@ public class ResourceClassService {
     }
 
     public ResourceClassDTO getByUuidResourceClass(String uuid) {
-        List<ResourceClassEntity> resourceClassEntityList = resourceClassRepository.findByUuid(uuid);
-        return mapResourceClassEntityToDTO(resourceClassEntityList).get(0);
+        Optional<ResourceClassEntity> resourceClassEntity = resourceClassRepository.findByUuid(uuid);
+        return entityToClassDTO(resourceClassEntity.get());
     }
 
     private List<ResourceClassDTO> mapResourceClassEntityToDTO(List<ResourceClassEntity> resourceClassEntityList) {
@@ -70,11 +74,25 @@ public class ResourceClassService {
     }
 
     public long deleteByUuidResourceClass(String uuid) {
-        return resourceClassRepository.deleteByUuid(uuid);
+        long result = resourceClassRepository.deleteByUuid(uuid);
+        if (result != 1) {
+            System.out.println("Error trying to delete Resource Class with " + uuid);
+            throw new ResourceClassNotFoundException(uuid);
+        }
+
+        return result;
     }
 
     public ResourceClassService(ResourceClassRepository resourceClassRepository) {
         this.resourceClassRepository = resourceClassRepository;
+    }
+
+    private ResourceClassDTO entityToClassDTO(ResourceClassEntity resourceClassEntity) {
+        ResourceClassDTO resourceClassObject = new ResourceClassDTO();
+        resourceClassObject.setName(resourceClassEntity.getName());
+        resourceClassObject.setUuid(resourceClassEntity.getUuid());
+
+        return resourceClassObject;
     }
 
 }

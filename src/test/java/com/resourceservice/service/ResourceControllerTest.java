@@ -49,7 +49,7 @@ public class ResourceControllerTest {
         CreateResourceDTO createResourceDTO = new CreateResourceDTO.CreateResourceDTOBuilder()
                 .withName("Mark")
                 .withDescription("Laptop")
-                .withResourceClassDTO(resourceClassDTO)
+                .withResourceClassUuid(classUuid)
                 .build();
 
         ResourceDTO resourceDTO = new ResourceDTO();

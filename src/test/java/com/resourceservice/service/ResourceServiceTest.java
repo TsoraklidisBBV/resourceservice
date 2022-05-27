@@ -1,5 +1,7 @@
 package com.resourceservice.service;
 
+import com.resourceservice.exception.ResourceClassBadRequestException;
+import com.resourceservice.exception.ResourceNotFoundException;
 import com.resourceservice.model.CreateResourceDTO;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.ResourceClassEntity;
@@ -18,8 +20,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -55,21 +59,20 @@ class ResourceServiceTest {
 
     @Test
     void createResource_Success() throws IOException {
-        List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
-        listOfResourceClassEntities.add(0, resourceClassEntity);
+        Optional<ResourceClassEntity> optionalResourceClassEntities = Optional.of(resourceClassEntity);
 
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
         resourceClassDTO.setName("Dell");
         resourceClassDTO.setUuid(classUuid);
 
-        when(resourceClassRepository.findByUuid(any())).thenReturn(listOfResourceClassEntities);
+        when(resourceClassRepository.findByUuid(any())).thenReturn(optionalResourceClassEntities);
         when(resourceRepository.save(any())).thenReturn(resourceEntity);
 
         ResourceDTO result = classUnderTest.createResource(
                 new CreateResourceDTO.CreateResourceDTOBuilder()
                         .withName("Mark")
                         .withDescription("Laptop")
-                        .withResourceClassDTO(resourceClassDTO)
+                        .withResourceClassUuid(classUuid)
                         .build()
         );
 
@@ -81,21 +84,20 @@ class ResourceServiceTest {
 
     @Test
     void createResource_Failure() throws IOException {
-        List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
-        listOfResourceClassEntities.add(0, resourceClassEntity);
+        Optional<ResourceClassEntity> optionalResourceClassEntities = Optional.of(resourceClassEntity);
 
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
         resourceClassDTO.setName("Mac");
         resourceClassDTO.setUuid("2");
 
-        when(resourceClassRepository.findByUuid(any())).thenReturn(listOfResourceClassEntities);
+        when(resourceClassRepository.findByUuid(any())).thenReturn(optionalResourceClassEntities);
         when(resourceRepository.save(any())).thenReturn(resourceEntity);
 
         ResourceDTO result = classUnderTest.createResource(
                 new CreateResourceDTO.CreateResourceDTOBuilder()
                         .withName("Mark")
                         .withDescription("Laptop")
-                        .withResourceClassDTO(resourceClassDTO)
+                        .withResourceClassUuid(classUuid)
                         .build()
         );
 
@@ -106,11 +108,25 @@ class ResourceServiceTest {
     }
 
     @Test
-    void updateResourceClass_Success() {
-        List<ResourceEntity> listOfResourceEntities = new ArrayList<>();
-        listOfResourceEntities.add(0, resourceEntity);
+    void createResource_ThrowException() throws IOException {
+        Throwable thrown = catchThrowable(() ->
+                classUnderTest.createResource(new CreateResourceDTO.CreateResourceDTOBuilder()
+                        .withName("Mark")
+                        .withDescription("Laptop")
+                        .withResourceClassUuid("2")
+                        .build())
+        );
 
-        when(resourceRepository.findByUuid(any())).thenReturn(listOfResourceEntities);
+        assertThat(thrown)
+                .isInstanceOf(ResourceClassBadRequestException.class)
+                .hasMessage("2");
+    }
+
+    @Test
+    void updateResourceClass_Success() {
+        Optional<ResourceEntity> optionalResourceEntity = Optional.of(resourceEntity);
+
+        when(resourceRepository.findByUuid(any())).thenReturn(optionalResourceEntity);
         when(resourceRepository.save(any())).thenReturn(resourceEntity);
 
         ResourceDTO result = classUnderTest.updateResource(
@@ -121,6 +137,17 @@ class ResourceServiceTest {
                 .isNotEmpty()
                 .contains("Dan", uuid);
 
+    }
+
+    @Test
+    void updateResourceClass_ThrowException() throws IOException {
+        Throwable thrown = catchThrowable(() ->
+                classUnderTest.updateResource(new UpdateResourceDTO.Builder().withName("Dan").build(), "2")
+        );
+
+        assertThat(thrown)
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("2");
     }
 
     @Test
@@ -154,11 +181,20 @@ class ResourceServiceTest {
     }
 
     @Test
-    void getByUuidResource_Success() throws IOException {
-        List<ResourceEntity> listOfResourceEntities = new ArrayList<>();
-        listOfResourceEntities.add(0, resourceEntity);
+    void getAllResource_ThrowException() throws IOException {
+        Throwable thrown = catchThrowable(() ->
+                classUnderTest.getAllResource()
+        );
 
-        when(resourceRepository.findByUuid(any())).thenReturn(listOfResourceEntities);
+        assertThat(thrown)
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(null);
+    }
+
+    @Test
+    void getByUuidResource_Success() throws IOException {
+        Optional<ResourceEntity> optionalResourceEntity = Optional.of(resourceEntity);
+        when(resourceRepository.findByUuid(any())).thenReturn(optionalResourceEntity);
 
         ResourceDTO result = classUnderTest.getByUuidResource(uuid);
         assertThat(result).extracting("name", "uuid")
@@ -169,16 +205,25 @@ class ResourceServiceTest {
 
     @Test
     void getByUuidResource_Failure() throws IOException {
-        List<ResourceEntity> listOfResourceEntities = new ArrayList<>();
-        listOfResourceEntities.add(0, resourceEntity);
-
-        when(resourceRepository.findByUuid(any())).thenReturn(listOfResourceEntities);
+        Optional<ResourceEntity> optionalResourceEntity = Optional.of(resourceEntity);
+        when(resourceRepository.findByUuid(any())).thenReturn(optionalResourceEntity);
 
         ResourceDTO result = classUnderTest.getByUuidResource(uuid);
         assertThat(result).extracting("name", "uuid")
                 .isNotNull()
                 .isNotEmpty()
                 .doesNotContain("Dan", "1");
+    }
+
+    @Test
+    void getByUuidResource_ThrowException() throws IOException {
+        Throwable thrown = catchThrowable(() ->
+                classUnderTest.getByUuidResource("2")
+        );
+
+        assertThat(thrown)
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(String.valueOf(2));
     }
 
     @Test
@@ -191,11 +236,13 @@ class ResourceServiceTest {
     }
 
     @Test
-    void deleteByUuidResource_Failure() {
-        when(resourceRepository.deleteByUuid(any())).thenReturn(0L);
+    void deleteByUuidResource_ThrowException() throws IOException {
+        Throwable thrown = catchThrowable(() ->
+                classUnderTest.deleteByUuidResource("2")
+        );
 
-        long result = classUnderTest.deleteByUuidResource(uuid);
-        assertThat(result).isEqualTo(0L)
-                .isNotNull();
+        assertThat(thrown)
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(String.valueOf(2));
     }
 }

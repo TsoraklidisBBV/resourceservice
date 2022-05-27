@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,9 +63,9 @@ class ResourceClassRepositoryTest {
 
     @Test
     void findByUuid_Success() {
-        List<ResourceClassEntity> result = classUnderTest.findByUuid(uuid);
-        assertThat(result).hasSize(1)
-                .flatExtracting("name", "uuid")
+        Optional<ResourceClassEntity> result = classUnderTest.findByUuid(uuid);
+        assertThat(result).get()
+                .extracting("name", "uuid")
                 .isNotNull()
                 .isNotEmpty()
                 .contains("Mac", uuid);
@@ -72,8 +73,8 @@ class ResourceClassRepositoryTest {
 
     @Test
     void findByUuid_Failure() {
-        List<ResourceClassEntity> result = classUnderTest.findByUuid("2");
-        assertThat(result).hasSize(0);
+        Optional<ResourceClassEntity> result = classUnderTest.findByUuid("2");
+        assertThat(result).isEmpty();
     }
 
     @Test

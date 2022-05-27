@@ -1,6 +1,6 @@
 package com.resourceservice.exception;
 
-class ResourceClassNotFoundException extends RuntimeException {
+public class ResourceClassNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
