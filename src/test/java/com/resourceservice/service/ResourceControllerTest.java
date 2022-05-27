@@ -3,13 +3,9 @@ package com.resourceservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.resourceservice.controller.ResourceController;
-import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.CreateResourceDTO;
 import com.resourceservice.model.ResourceClassDTO;
-import com.resourceservice.model.ResourceClassEntity;
 import com.resourceservice.model.ResourceDTO;
-import com.resourceservice.model.ResourceEntity;
-import com.resourceservice.model.UpdateResourceClassDTO;
 import com.resourceservice.model.UpdateResourceDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

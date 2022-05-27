@@ -31,11 +31,11 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-        return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorMessage> resourceClassBadRequestException(ResourceNotFoundException ex, WebRequest request) {
+    @ExceptionHandler(ResourceClassBadRequestException.class)
+    public ResponseEntity<ErrorMessage> resourceClassBadRequestException(ResourceBadRequestException ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.BAD_REQUEST.value(),
                 new Date(),
@@ -44,8 +44,8 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorMessage> resourceBadRequestException(ResourceNotFoundException ex, WebRequest request) {
+    @ExceptionHandler(ResourceBadRequestException.class)
+    public ResponseEntity<ErrorMessage> resourceBadRequestException(ResourceBadRequestException ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.BAD_REQUEST.value(),
                 new Date(),
