@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.resourceservice.exception.ResourceBadRequestException;
-import com.resourceservice.exception.ResourceClassBadRequestException;
 import com.resourceservice.exception.ResourceClassNotFoundException;
 import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
@@ -35,6 +33,11 @@ public class ResourceClassService {
 
     public ResourceClassDTO updateResourceClass(UpdateResourceClassDTO updateResourceClassDTO, String uuid) {
         Optional<ResourceClassEntity> resourceClassEntity = resourceClassRepository.findByUuid(uuid);
+        if (resourceClassEntity.isEmpty()) {
+            System.out.println("There is no Resource with UUID: " + uuid);
+            throw new ResourceClassNotFoundException(uuid);
+        }
+
         resourceClassEntity.get().setName(updateResourceClassDTO.getName());
         ResourceClassEntity savedResourceClassEntity = resourceClassRepository.save(resourceClassEntity.get());
 
@@ -46,12 +49,43 @@ public class ResourceClassService {
 
     public List<ResourceClassDTO> getAllResourceClass() {
         List<ResourceClassEntity> resourceClassEntityList = resourceClassRepository.findAll();
+        if (resourceClassEntityList.isEmpty()) {
+            System.out.println("There is no Resource ");
+            throw new ResourceClassNotFoundException(null);
+        }
         return mapResourceClassEntityToDTO(resourceClassEntityList);
     }
 
     public ResourceClassDTO getByUuidResourceClass(String uuid) {
         Optional<ResourceClassEntity> resourceClassEntity = resourceClassRepository.findByUuid(uuid);
+        if (resourceClassEntity.isEmpty()) {
+            System.out.println("There is no Resource with UUID: " + uuid);
+            throw new ResourceClassNotFoundException(uuid);
+        }
+
         return entityToClassDTO(resourceClassEntity.get());
+    }
+
+    public long deleteByUuidResourceClass(String uuid) {
+        long result = resourceClassRepository.deleteByUuid(uuid);
+        if (result != 1L) {
+            System.out.println("Error trying to delete Resource Class with " + uuid);
+            throw new ResourceClassNotFoundException(uuid);
+        }
+
+        return result;
+    }
+
+    public ResourceClassService(ResourceClassRepository resourceClassRepository) {
+        this.resourceClassRepository = resourceClassRepository;
+    }
+
+    private ResourceClassDTO entityToClassDTO(ResourceClassEntity resourceClassEntity) {
+        ResourceClassDTO resourceClassObject = new ResourceClassDTO();
+        resourceClassObject.setName(resourceClassEntity.getName());
+        resourceClassObject.setUuid(resourceClassEntity.getUuid());
+
+        return resourceClassObject;
     }
 
     private List<ResourceClassDTO> mapResourceClassEntityToDTO(List<ResourceClassEntity> resourceClassEntityList) {
@@ -71,28 +105,6 @@ public class ResourceClassService {
         }
 
         return resourceClassDTOList;
-    }
-
-    public long deleteByUuidResourceClass(String uuid) {
-        long result = resourceClassRepository.deleteByUuid(uuid);
-        if (result != 1) {
-            System.out.println("Error trying to delete Resource Class with " + uuid);
-            throw new ResourceClassNotFoundException(uuid);
-        }
-
-        return result;
-    }
-
-    public ResourceClassService(ResourceClassRepository resourceClassRepository) {
-        this.resourceClassRepository = resourceClassRepository;
-    }
-
-    private ResourceClassDTO entityToClassDTO(ResourceClassEntity resourceClassEntity) {
-        ResourceClassDTO resourceClassObject = new ResourceClassDTO();
-        resourceClassObject.setName(resourceClassEntity.getName());
-        resourceClassObject.setUuid(resourceClassEntity.getUuid());
-
-        return resourceClassObject;
     }
 
 }

@@ -142,7 +142,8 @@ class ResourceServiceTest {
     @Test
     void updateResourceClass_ThrowException() throws IOException {
         Throwable thrown = catchThrowable(() ->
-                classUnderTest.updateResource(new UpdateResourceDTO.Builder().withName("Dan").build(), "2")
+                classUnderTest.updateResource(
+                        new UpdateResourceDTO.Builder().withName("Dan").build(), "2")
         );
 
         assertThat(thrown)

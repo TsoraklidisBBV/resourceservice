@@ -1,7 +1,6 @@
 package com.resourceservice.service;
 
 import com.resourceservice.exception.ResourceClassNotFoundException;
-import com.resourceservice.exception.ResourceNotFoundException;
 import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.ResourceClassEntity;
@@ -105,6 +104,18 @@ class ResourceClassServiceTest {
   }
 
   @Test
+  void updateResourceClass_ThrowException() throws IOException {
+    Throwable thrown = catchThrowable(() ->
+            classUnderTest.updateResourceClass(
+                    new UpdateResourceClassDTO.Builder().withName("Dan").build(), "2")
+    );
+
+    assertThat(thrown)
+            .isInstanceOf(ResourceClassNotFoundException.class)
+            .hasMessage("2");
+  }
+
+  @Test
   void getAllResourceClass_Success() {
     List<ResourceClassEntity> listOfResourceClassEntities = new ArrayList<>();
     listOfResourceClassEntities.add(0, resourceClassEntity);
@@ -135,6 +146,17 @@ class ResourceClassServiceTest {
   }
 
   @Test
+  void getAllResourceClass_ThrowException() throws IOException {
+    Throwable thrown = catchThrowable(() ->
+            classUnderTest.getAllResourceClass()
+    );
+
+    assertThat(thrown)
+            .isInstanceOf(ResourceClassNotFoundException.class)
+            .hasMessage(null);
+  }
+
+  @Test
   void getByUuidResourceClass_Success() {
     Optional<ResourceClassEntity> optionalResourceClassEntities = Optional.of(resourceClassEntity);
     when(resourceClassRepository.findByUuid(any())).thenReturn(optionalResourceClassEntities);
@@ -156,6 +178,17 @@ class ResourceClassServiceTest {
             .isNotNull()
             .isNotEmpty()
             .doesNotContain("Mac", "1");
+  }
+
+  @Test
+  void getByUuidResourceClass_ThrowException() throws IOException {
+    Throwable thrown = catchThrowable(() ->
+            classUnderTest.getByUuidResourceClass("2")
+    );
+
+    assertThat(thrown)
+            .isInstanceOf(ResourceClassNotFoundException.class)
+            .hasMessage(String.valueOf(2));
   }
 
   @Test

@@ -1,8 +1,6 @@
 package com.resourceservice.service;
 
-import com.resourceservice.exception.ResourceBadRequestException;
 import com.resourceservice.exception.ResourceClassBadRequestException;
-import com.resourceservice.exception.ResourceClassNotFoundException;
 import com.resourceservice.exception.ResourceNotFoundException;
 import com.resourceservice.model.CreateResourceDTO;
 import com.resourceservice.model.ResourceClassDTO;
