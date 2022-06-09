@@ -150,6 +150,17 @@ public class ResourceControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string("Resource with uuid: " + uuid + " was Deleted"));
     }
 
+//    @Test
+//    public void deleteByUuidResourceObject_Failure() throws Exception {
+//        when(resourceService.deleteByUuidResource(any())).thenReturn(0L);
+//
+//        mockMvc.perform(
+//                        MockMvcRequestBuilders.delete("/resource/{uuid}", uuid))
+//                .andExpect(status().isNotFound())
+//                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(MockMvcResultMatchers.content().string("Resource with uuid: " + uuid + " was Deleted"));
+//    }
+
     private String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
