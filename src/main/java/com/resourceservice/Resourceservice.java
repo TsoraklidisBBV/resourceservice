@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class resourceservice {
+public class Resourceservice {
 
     public static void main(String[] args) {
-        SpringApplication.run(resourceservice.class, args);
+        SpringApplication.run(Resourceservice.class, args);
     }
 
 }

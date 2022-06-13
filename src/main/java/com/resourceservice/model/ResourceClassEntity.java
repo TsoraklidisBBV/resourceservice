@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Table(name = "TBL_RESOURCE_CLASS")
+@Table(name = "TBL_CLASS_RESOURCE")
 @Entity
 public class ResourceClassEntity {
     @Id

@@ -50,7 +50,7 @@ public class ResourceClassService {
     public List<ResourceClassDTO> getAllResourceClass() {
         List<ResourceClassEntity> resourceClassEntityList = resourceClassRepository.findAll();
         if (resourceClassEntityList.isEmpty()) {
-            System.out.println("There is no Resource ");
+            System.out.println("There is no Resource");
             throw new ResourceClassNotFoundException(null);
         }
         return mapResourceClassEntityToDTO(resourceClassEntityList);

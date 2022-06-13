@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.resourceservice.controller.ResourceClassController;
 import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
-import com.resourceservice.model.ResourceClassEntity;
-import com.resourceservice.model.ResourceEntity;
 import com.resourceservice.model.UpdateResourceClassDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
