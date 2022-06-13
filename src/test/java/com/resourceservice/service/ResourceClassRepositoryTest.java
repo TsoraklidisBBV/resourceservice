@@ -54,7 +54,7 @@ class ResourceClassRepositoryTest {
     @Test
     void findAll_Success() {
         List<ResourceClassEntity> result = classUnderTest.findAll();
-        assertThat(result).hasSize(1)
+        assertThat(result).hasSize(3)
                 .flatExtracting("name", "uuid")
                 .isNotNull()
                 .isNotEmpty()

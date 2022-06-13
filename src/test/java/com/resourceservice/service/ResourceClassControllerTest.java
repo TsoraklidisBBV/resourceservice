@@ -3,6 +3,7 @@ package com.resourceservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.resourceservice.controller.ResourceClassController;
+import com.resourceservice.exception.ResourceNotFoundException;
 import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.UpdateResourceClassDTO;
@@ -75,6 +76,16 @@ public class ResourceClassControllerTest {
     }
 
     @Test
+    public void getAllResourceObjects_Failure() throws Exception {
+        when(resourceClassService.getAllResourceClass()).thenThrow(new ResourceNotFoundException(uuid));
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/retrieveallresourceclass"))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
     public void getByUuidResourceObject_Success() throws Exception {
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
         resourceClassDTO.setUuid(uuid);
@@ -83,10 +94,20 @@ public class ResourceClassControllerTest {
         when(resourceClassService.getByUuidResourceClass(any())).thenReturn(resourceClassDTO);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/resourceclass/{uuid}", "1"))
+                        MockMvcRequestBuilders.get("/resourceclass/{uuid}", uuid))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.content().json(asJsonString(resourceClassDTO)));
+    }
+
+    @Test
+    public void getByUuidResourceObject_Failure() throws Exception {
+        when(resourceClassService.getByUuidResourceClass(any())).thenThrow(new ResourceNotFoundException(uuid));
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/resourceclass/{uuid}", uuid))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -111,6 +132,22 @@ public class ResourceClassControllerTest {
     }
 
     @Test
+    public void updateResourceObject_Failure() throws Exception {
+        UpdateResourceClassDTO updateResourceClassDTO = new UpdateResourceClassDTO.Builder().withName("Mac").build();
+
+        when(resourceClassService.updateResourceClass(any(), any())).thenThrow(new ResourceNotFoundException(uuid));
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.put("/resourceclass/{uuid}", uuid)
+                                .content(asJsonString(updateResourceClassDTO))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
     public void deleteByUuidResourceObject_Success() throws Exception {
         when(resourceClassService.deleteByUuidResourceClass(any())).thenReturn(1L);
 
@@ -119,6 +156,16 @@ public class ResourceClassControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.content().string("Resource with uuid: " + uuid + " was Deleted"));
+    }
+
+    @Test
+    public void deleteByUuidResourceObject_Failure() throws Exception {
+        when(resourceClassService.deleteByUuidResourceClass(any())).thenThrow(new ResourceNotFoundException(uuid));
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.delete("/resourceclass/{uuid}", uuid))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     private String asJsonString(final Object obj) {

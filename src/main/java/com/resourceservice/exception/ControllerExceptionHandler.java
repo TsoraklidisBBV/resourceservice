@@ -35,7 +35,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(ResourceClassBadRequestException.class)
-    public ResponseEntity<ErrorMessage> resourceClassBadRequestException(ResourceBadRequestException ex, WebRequest request) {
+    public ResponseEntity<ErrorMessage> resourceClassBadRequestException(ResourceClassBadRequestException ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.BAD_REQUEST.value(),
                 new Date(),

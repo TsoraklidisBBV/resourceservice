@@ -3,6 +3,8 @@ package com.resourceservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.resourceservice.controller.ResourceController;
+import com.resourceservice.exception.ResourceClassBadRequestException;
+import com.resourceservice.exception.ResourceNotFoundException;
 import com.resourceservice.model.CreateResourceDTO;
 import com.resourceservice.model.ResourceClassDTO;
 import com.resourceservice.model.ResourceDTO;
@@ -68,6 +70,26 @@ public class ResourceControllerTest {
     }
 
     @Test
+    public void createResourceObject_Failure() throws Exception {
+        CreateResourceDTO createResourceDTO = new CreateResourceDTO.CreateResourceDTOBuilder()
+                .withName("Mark")
+                .withDescription("Laptop")
+                .withResourceClassUuid(classUuid)
+                .build();
+
+        when(resourceService.createResource(any())).thenThrow(new ResourceClassBadRequestException(uuid));
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/resource")
+                                .content(asJsonString(createResourceDTO))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
     public void getAllResourceObjects_Success() throws Exception {
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
         resourceClassDTO.setUuid(classUuid);
@@ -112,6 +134,16 @@ public class ResourceControllerTest {
     }
 
     @Test
+    public void getByUuidResourceObject_Failure() throws Exception {
+        when(resourceService.getByUuidResource(any())).thenThrow(new ResourceNotFoundException(uuid));
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/resource/{uuid}", uuid))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
     public void updateResourceObject_Success() throws Exception {
         ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
         resourceClassDTO.setUuid(classUuid);
@@ -140,6 +172,24 @@ public class ResourceControllerTest {
     }
 
     @Test
+    public void updateResourceObject_Failure() throws Exception {
+        UpdateResourceDTO updateResourceDTO = new UpdateResourceDTO.Builder()
+                .withName("Dan")
+                .build();
+
+        when(resourceService.updateResource(any(), any())).thenThrow(new ResourceNotFoundException(uuid));
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.put("/resource/{uuid}", uuid)
+                                .content(asJsonString(updateResourceDTO))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
     public void deleteByUuidResourceObject_Success() throws Exception {
         when(resourceService.deleteByUuidResource(any())).thenReturn(1L);
 
@@ -152,13 +202,13 @@ public class ResourceControllerTest {
 
     @Test
     public void deleteByUuidResourceObject_Failure() throws Exception {
-        when(resourceService.deleteByUuidResource(any())).thenReturn(0L);
+        when(resourceService.deleteByUuidResource(any())).thenThrow(new ResourceNotFoundException(uuid));
 
         mockMvc.perform(
                         MockMvcRequestBuilders.delete("/resource/{uuid}", uuid))
                 .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().string("Resource with uuid: " + uuid + " was Deleted"));
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+        //TODO:Timestap is in the message can I build an except with that ?
     }
 
     private String asJsonString(final Object obj) {
