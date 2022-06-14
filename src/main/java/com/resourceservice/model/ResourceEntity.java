@@ -3,6 +3,7 @@ package com.resourceservice.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -13,7 +14,7 @@ import javax.persistence.Table;
 public class ResourceEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
     String name;
@@ -45,20 +46,20 @@ public class ResourceEntity {
         this.resourceClassEntity = resourceClassEntity;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Integer getID() {
-        return id;
-    }
-
-    public void setID(Integer id) {
-        this.id = id;
     }
 
     public String getUuid() {
