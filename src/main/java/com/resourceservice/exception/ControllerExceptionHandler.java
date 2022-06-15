@@ -54,7 +54,7 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IOException.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> globalExceptionHandler(Exception ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),

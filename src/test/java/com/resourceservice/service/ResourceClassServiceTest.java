@@ -1,5 +1,6 @@
 package com.resourceservice.service;
 
+import com.resourceservice.exception.ResourceClassBadRequestException;
 import com.resourceservice.exception.ResourceClassNotFoundException;
 import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -45,10 +46,6 @@ class ResourceClassServiceTest {
 
   @Test
   void createResourceClass_Success() {
-    ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
-    resourceClassDTO.setName(resourceClassEntity.getName());
-    resourceClassDTO.setUuid(resourceClassEntity.getUuid());
-
     when(resourceClassRepository.save(any())).thenReturn(resourceClassEntity);
 
     ResourceClassDTO result = classUnderTest.createResourceClass(
@@ -60,6 +57,14 @@ class ResourceClassServiceTest {
             .isNotEmpty()
             .contains("Dell", uuid);
   }
+
+  @Test
+  void createResourceClass_ThrowException() throws IOException {
+    assertThatThrownBy(() -> {
+      classUnderTest.createResourceClass(new CreateResourceClassDTO.Builder().withName("").build());
+    }).isInstanceOf(ResourceClassBadRequestException.class).hasMessage("Name should not be null");
+  }
+
 
   @Test
   void updateResourceClass_Success() {
@@ -87,10 +92,6 @@ class ResourceClassServiceTest {
     Optional<ResourceClassEntity> optionalResourceClassEntities = Optional.of(resourceClassEntity);
     when(resourceClassRepository.findByUuid(any())).thenReturn(optionalResourceClassEntities);
 
-    ResourceClassDTO resourceClassDTO = new ResourceClassDTO();
-    resourceClassDTO.setName(resourceClassEntity.getName());
-    resourceClassDTO.setUuid(resourceClassEntity.getUuid());
-
     when(resourceClassRepository.save(any())).thenReturn(resourceClassEntity);
 
     ResourceClassDTO result = classUnderTest.updateResourceClass(
@@ -104,15 +105,20 @@ class ResourceClassServiceTest {
   }
 
   @Test
-  void updateResourceClass_ThrowException() throws IOException {
-    Throwable thrown = catchThrowable(() ->
-            classUnderTest.updateResourceClass(
-                    new UpdateResourceClassDTO.Builder().withName("Dan").build(), "2")
-    );
+  void updateResourceClass_ThrowException_NotFound() throws IOException {
+    assertThatThrownBy(() -> {
+      classUnderTest.updateResourceClass(new UpdateResourceClassDTO.Builder().withName("Dan").build(), "2");
+    }).isInstanceOf(ResourceClassNotFoundException.class).hasMessage("2");
+  }
 
-    assertThat(thrown)
-            .isInstanceOf(ResourceClassNotFoundException.class)
-            .hasMessage("2");
+  @Test
+  void updateResourceClass_ThrowException_BadRequest() throws IOException {
+    Optional<ResourceClassEntity> optionalResourceClassEntities = Optional.of(resourceClassEntity);
+    when(resourceClassRepository.findByUuid(any())).thenReturn(optionalResourceClassEntities);
+
+    assertThatThrownBy(() -> {
+      classUnderTest.updateResourceClass(new UpdateResourceClassDTO.Builder().build(), "2");
+    }).isInstanceOf(ResourceClassBadRequestException.class).hasMessage("Name should not be null");
   }
 
   @Test
@@ -147,13 +153,9 @@ class ResourceClassServiceTest {
 
   @Test
   void getAllResourceClass_ThrowException() throws IOException {
-    Throwable thrown = catchThrowable(() ->
-            classUnderTest.getAllResourceClass()
-    );
-
-    assertThat(thrown)
-            .isInstanceOf(ResourceClassNotFoundException.class)
-            .hasMessage(null);
+    assertThatThrownBy(() -> {
+      classUnderTest.getAllResourceClass();
+    }).isInstanceOf(ResourceClassNotFoundException.class).hasMessage(null);
   }
 
   @Test
@@ -182,13 +184,9 @@ class ResourceClassServiceTest {
 
   @Test
   void getByUuidResourceClass_ThrowException() throws IOException {
-    Throwable thrown = catchThrowable(() ->
-            classUnderTest.getByUuidResourceClass("2")
-    );
-
-    assertThat(thrown)
-            .isInstanceOf(ResourceClassNotFoundException.class)
-            .hasMessage(String.valueOf(2));
+    assertThatThrownBy(() -> {
+      classUnderTest.getByUuidResourceClass("2");
+    }).isInstanceOf(ResourceClassNotFoundException.class).hasMessage(String.valueOf(2));
   }
 
   @Test
@@ -202,12 +200,8 @@ class ResourceClassServiceTest {
 
   @Test
   void deleteByUuidResource_ThrowException() throws IOException {
-    Throwable thrown = catchThrowable(() ->
-            classUnderTest.deleteByUuidResourceClass("2")
-    );
-
-    assertThat(thrown)
-            .isInstanceOf(ResourceClassNotFoundException.class)
-            .hasMessage(String.valueOf(2));
+    assertThatThrownBy(() -> {
+      classUnderTest.deleteByUuidResourceClass("2");
+    }).isInstanceOf(ResourceClassNotFoundException.class).hasMessage(String.valueOf(2));
   }
 }

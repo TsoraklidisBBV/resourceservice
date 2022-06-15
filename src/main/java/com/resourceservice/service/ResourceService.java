@@ -1,5 +1,6 @@
 package com.resourceservice.service;
 
+import com.resourceservice.exception.ResourceBadRequestException;
 import com.resourceservice.exception.ResourceClassBadRequestException;
 import com.resourceservice.exception.ResourceNotFoundException;
 import com.resourceservice.model.CreateResourceDTO;
@@ -30,6 +31,10 @@ public class ResourceService {
 
     public ResourceDTO createResource(CreateResourceDTO createResourceDTO) throws IOException {
         ResourceEntity resourceEntity = new ResourceEntity();
+        if (createResourceDTO.getName() == null || createResourceDTO.getName().isEmpty()) {
+            throw new ResourceBadRequestException("Name should not be null");
+        }
+
         resourceEntity.setName(createResourceDTO.getName());
         resourceEntity.setUuid(UUID.randomUUID().toString());
         resourceEntity.setDescription(createResourceDTO.getDescription());
@@ -37,13 +42,12 @@ public class ResourceService {
         Optional<ResourceClassEntity> resourceClassEntityList = resourceClassRepository
                 .findByUuid(createResourceDTO.getResourceClassUuid());
         if (resourceClassEntityList.isEmpty()) {
-            System.out.println("There is no Resource Class to return");
-            throw new ResourceClassBadRequestException(createResourceDTO.getResourceClassUuid());
+            System.out.println("There is no Resource Class to return with Uuid" + createResourceDTO.getResourceClassUuid());
+            throw new ResourceClassBadRequestException("There is no Resource Class to return with Uuid: " + createResourceDTO.getResourceClassUuid());
         }
 
         resourceEntity.setResourceClassEntity(resourceClassEntityList.get());
         ResourceEntity savedResourceEntity = repository.save(resourceEntity);
-        //TODO: does this need to throw an exception?
 
         ResourceClassDTO resourceClassDTO = entityToClassDTO(resourceEntity.getResourceClassEntity());
         ResourceDTO result = entityToDTO(savedResourceEntity);
@@ -55,7 +59,11 @@ public class ResourceService {
         Optional<ResourceEntity> resourceEntity = repository.findByUuid(resourceUuid);
         if (resourceEntity.isEmpty()) {
             System.out.println("There is no Resource with UUID: " + resourceUuid);
-            throw new ResourceNotFoundException(resourceUuid);
+            throw new ResourceNotFoundException("There is no Resource Class to return with Uuid: " + resourceUuid);
+        }
+
+        if (updateResourceDTO.getName() == null || updateResourceDTO.getName().isEmpty()) {
+            throw new ResourceBadRequestException("Name should not be null");
         }
 
         resourceEntity.get().setName(updateResourceDTO.getName());

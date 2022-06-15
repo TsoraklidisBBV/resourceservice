@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.resourceservice.exception.ResourceClassBadRequestException;
 import com.resourceservice.exception.ResourceClassNotFoundException;
 import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
@@ -21,8 +22,13 @@ public class ResourceClassService {
 
     public ResourceClassDTO createResourceClass(CreateResourceClassDTO createResourceClassDTO) {
         ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
+        if (createResourceClassDTO.getName() == null || createResourceClassDTO.getName().isEmpty()) {
+            throw new ResourceClassBadRequestException("Name should not be null");
+        }
+
         resourceClassEntity.setName(createResourceClassDTO.getName());
         resourceClassEntity.setUuid(UUID.randomUUID().toString());
+
         ResourceClassEntity savedResourceClass = resourceClassRepository.save(resourceClassEntity);
 
         ResourceClassDTO result = new ResourceClassDTO();
@@ -38,6 +44,9 @@ public class ResourceClassService {
             throw new ResourceClassNotFoundException(uuid);
         }
 
+        if (updateResourceClassDTO.getName() == null || updateResourceClassDTO.getName().isEmpty()) {
+            throw new ResourceClassBadRequestException("Name should not be null");
+        }
         resourceClassEntity.get().setName(updateResourceClassDTO.getName());
         ResourceClassEntity savedResourceClassEntity = resourceClassRepository.save(resourceClassEntity.get());
 
