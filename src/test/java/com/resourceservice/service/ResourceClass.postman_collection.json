@@ -1,0 +1,206 @@
+{
+  "info": {
+    "_postman_id": "d74903a8-ec1a-443a-ac97-16c5260cca4d",
+    "name": "ResourceClass",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create a ResourceClass",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Check Http Status Code if Successful\",()=>{\r",
+              "    pm.expect(pm.response.code).to.eql(201)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"response must be valid and have a body\", ()=>{\r",
+              "    pm.response.to.not.be.error;\r",
+              "    pm.response.to.be.withBody;   \r",
+              "    pm.response.to.be.json; \r",
+              "})\r",
+              "\r",
+              "pm.test(\"response has the proper values for name and uuid\", ()=> {\r",
+              "   const responseJson = pm.response.json();\r",
+              "   pm.expect(responseJson.name).to.eql(\"ddddd\");\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Content-Type header is present\", () => {\r",
+              "  pm.response.to.have.header(\"Content-Type\");\r",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\":\"ddddd\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/resourceclass",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "resourceclass"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get AllResourceClass",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Check Http Status Code if Successful\",()=>{\r",
+              "    pm.expect(pm.response.code).to.eql(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"response must be valid and have a body\", ()=>{\r",
+              "    pm.response.to.be.ok;\r",
+              "    pm.response.to.be.withBody;   \r",
+              "    pm.response.to.be.json; \r",
+              "})\r",
+              "\r",
+              "pm.test(\"response has the proper values for name and uuid\", ()=> {\r",
+              "   const responseJson = pm.response.json();\r",
+              "   pm.expect(responseJson.name).to.eql(\"Dan\");\r",
+              "   pm.expect(responseJson.uuid).to.eql(\"58ea852e-022b-4288-9d20-d93feab537d6\")\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Content-Type header is present\", () => {\r",
+              "  pm.response.to.have.header(\"Content-Type\");\r",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/retrieveallresourceclass",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "retrieveallresourceclass"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get a ResourceClass",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Check Http Status Code if Successful\",()=>{\r",
+              "    pm.expect(pm.response.code).to.eql(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"response must be valid and have a body\", ()=>{\r",
+              "    pm.response.to.be.ok;\r",
+              "    pm.response.to.be.withBody;   \r",
+              "    pm.response.to.be.json; \r",
+              "})\r",
+              "\r",
+              "pm.test(\"response has the proper values for name and uuid\", ()=> {\r",
+              "   const responseJson = pm.response.json();\r",
+              "   pm.expect(responseJson.name).to.eql(\"DELL\");\r",
+              "   pm.expect(responseJson.uuid).to.eql(\"58ea852e-022b-4288-9d20-d93feab537d6\")\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Content-Type header is present\", () => {\r",
+              "  pm.response.to.have.header(\"Content-Type\");\r",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/resourceclass/58ea852e-022b-4288-9d20-d93feab537d6",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "resourceclass",
+            "58ea852e-022b-4288-9d20-d93feab537d6"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete a ResourceClass",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/resourceclass/58ea852e-022b-4288-9d20-d93feab537d6\n",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "resourceclass",
+            "58ea852e-022b-4288-9d20-d93feab537d6\n"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\":\"blue\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/resourceclass/113e6110-d635-459b-a766-e0648b23946e\n",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "resourceclass",
+            "113e6110-d635-459b-a766-e0648b23946e\n"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

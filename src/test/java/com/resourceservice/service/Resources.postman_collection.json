@@ -1,0 +1,201 @@
+{
+  "info": {
+    "_postman_id": "b49cbffe-66e2-4871-b5cd-fe0d85845fbe",
+    "name": "Resources",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Resource with UUID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Check Http Status Code if Successful\",()=>{\r",
+              "    pm.expect(pm.response.code).to.eql(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"response must be valid and have a body\", ()=>{\r",
+              "    pm.response.to.be.ok;\r",
+              "    pm.response.to.be.withBody;   \r",
+              "    pm.response.to.be.json; \r",
+              "})\r",
+              "\r",
+              "pm.test(\"response has the proper values for name and uuid\", ()=> {\r",
+              "   const responseJson = pm.response.json();\r",
+              "   pm.expect(responseJson.name).to.eql(\"Dan\");\r",
+              "   pm.expect(responseJson.uuid).to.eql(\"58ea852e-022b-4288-9d20-d93feab537d6\")\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Content-Type header is present\", () => {\r",
+              "  pm.response.to.have.header(\"Content-Type\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/resource/910c1b38-8227-4208-9e97-c549794ea258",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "resource",
+            "910c1b38-8227-4208-9e97-c549794ea258"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/request/Dan",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "request",
+            "Dan"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create a Resource",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Check Http Status Code if Successful\",()=>{\r",
+              "    pm.expect(pm.response.code).to.eql(201)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"response must be valid and have a body\", ()=>{\r",
+              "    pm.response.to.not.be.error;\r",
+              "    pm.response.to.be.withBody;   \r",
+              "    pm.response.to.be.json; \r",
+              "})\r",
+              "\r",
+              "pm.test(\"response has the proper values for name and uuid\", ()=> {\r",
+              "   const responseJson = pm.response.json();\r",
+              "   pm.expect(responseJson.name).to.eql(\"Dan\");\r",
+              "   pm.expect(responseJson.resourceClassDTO.name).to.eql(\"ddddd\")\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Content-Type header is present\", () => {\r",
+              "  pm.response.to.have.header(\"Content-Type\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\":\"Dan\",\r\n    \"description\":\"ddddd\",\r\n    \"resourceClassUuid\": \"4a121480-b05c-4fc9-84cb-bf143ff0cf97\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/resource",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "resource"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Resource",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Check Http Status Code if Successful\",()=>{\r",
+              "    pm.expect(pm.response.code).to.eql(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"response must be valid and have a body\", ()=>{\r",
+              "    pm.response.to.be.ok;\r",
+              "    pm.response.to.not.be.error;\r",
+              "    pm.response.to.be.withBody;   \r",
+              "    pm.response.to.be.json; \r",
+              "})\r",
+              "\r",
+              "pm.test(\"response has the proper values for name and uuid\", ()=> {\r",
+              "   const responseJson = pm.response.json();\r",
+              "   pm.expect(responseJson.name).to.eql(\"Dan\");\r",
+              "   pm.expect(responseJson.resourceClassDTO.name).to.eql(\"ddddd\")\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Content-Type header is present\", () => {\r",
+              "  pm.response.to.have.header(\"Content-Type\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\":\"Markus\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/resource/58ea852e-022b-4288-9d20-d93feab537d6",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "resource",
+            "58ea852e-022b-4288-9d20-d93feab537d6"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get AllResources",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}
