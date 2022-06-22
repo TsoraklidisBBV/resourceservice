@@ -9,16 +9,22 @@ import com.resourceservice.exception.ResourceClassBadRequestException;
 import com.resourceservice.exception.ResourceClassNotFoundException;
 import com.resourceservice.model.CreateResourceClassDTO;
 import com.resourceservice.model.ResourceClassDTO;
+import com.resourceservice.model.ResourceEntity;
 import com.resourceservice.model.UpdateResourceClassDTO;
+import com.resourceservice.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.resourceservice.model.ResourceClassEntity;
 import com.resourceservice.repository.ResourceClassRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ResourceClassService {
     @Autowired
     private ResourceClassRepository resourceClassRepository;
+
+    @Autowired
+    private ResourceRepository resourceRepository;
 
     public ResourceClassDTO createResourceClass(CreateResourceClassDTO createResourceClassDTO) {
         ResourceClassEntity resourceClassEntity = new ResourceClassEntity();
@@ -76,6 +82,19 @@ public class ResourceClassService {
     }
 
     public long deleteByUuidResourceClass(String uuid) {
+        ResourceClassEntity entity = resourceClassRepository.getByUuid(uuid);
+        List<ResourceEntity> list = resourceRepository.findResourceEntitiesById(entity.getId());
+//
+//       // Todo: if the list is empty, doesnt it mean it just can be deleted ?
+//         //TODO: if a ResourceDoesnt have doesnt have an entity, should it be deleted as well ?
+//        if(!list.isEmpty()){
+//           // throw new ResourceClassUseExcpetion(uuid) -> BadException
+//        }
+//
+//        for (ResourceEntity resourceModel : list) {
+//           resourceModel.setResourceClassEntity(entity1);
+//        }
+
         long result = resourceClassRepository.deleteByUuid(uuid);
         if (result != 1L) {
             System.out.println("Error trying to delete Resource Class with " + uuid);
